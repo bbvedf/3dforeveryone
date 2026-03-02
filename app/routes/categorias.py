@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from app.database import get_db
 from app.models import Categoria
@@ -14,7 +15,7 @@ router = APIRouter(prefix="/categorias", tags=["categorías"])
 @router.get("/", response_model=list[CategoriaSchema])
 def listar_categorias(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """Listar todas las categorías (público)"""
-    return db.query(Categoria).filter(Categoria.activa == True).offset(skip).limit(limit).all()
+    return db.query(Categoria).filter(Categoria.activa == True).order_by(func.lower(Categoria.nombre)).offset(skip).limit(limit).all()
 
 
 @router.get("/{categoria_id}", response_model=CategoriaSchema)

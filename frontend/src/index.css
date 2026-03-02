@@ -144,3 +144,100 @@ button:active {
 .animate-fade-in {
   animation: fadeIn 0.8s ease-out forwards;
 }
+
+/* 📜 TABLAS (Admin Panel) */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+th {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 15px;
+  text-align: left;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+}
+
+td {
+  padding: 15px;
+  border-bottom: 1px solid var(--card-border);
+  font-size: 14px;
+  color: var(--text-main);
+}
+
+tr:hover td {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.badge {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.badge-success {
+  background: rgba(0, 255, 100, 0.1);
+  color: #00ff64;
+}
+
+.badge-danger {
+  background: rgba(255, 50, 50, 0.1);
+  color: #ff3232;
+}
+
+.btn-action {
+  background: none;
+  border: 1px solid var(--card-border);
+  color: var(--text-muted);
+  padding: 6px 14px;
+  border-radius: 8px;
+  margin-right: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-action:hover {
+  border-color: var(--primary);
+  color: white;
+  background: var(--primary);
+}
+
+.btn-delete:hover {
+  border-color: #ff3232;
+  color: white;
+  background: #ff3232;
+}
+
+/* 🍔 MENÚ HAMBURGUESA ITEMS */
+.drawer-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 15px !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  padding: 12px 15px !important;
+  border-radius: 12px !important;
+  color: var(--text-main) !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+}
+
+.drawer-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateX(5px);
+  color: var(--primary) !important;
+}
+
+body.light-theme .drawer-item:hover {
+  background: rgba(0, 0, 0, 0.05);
+}

@@ -5,6 +5,10 @@ import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
 import Catalog from './pages/Catalog';
 import Login from './pages/Login';
+import Register from './pages/Register';
+import Profile from './pages/Profile';
+import AdminProducts from './pages/admin/AdminProducts';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const App = () => {
   return (
@@ -24,9 +28,24 @@ const App = () => {
               <Routes>
                 <Route path="/" element={<Catalog />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/registro" element={<Register />} />
                 <Route path="/categorias" element={<div className="container" style={{ padding: '40px' }}><h2>Categorías Premium</h2><p>Listado próximamente...</p></div>} />
-                <Route path="/admin" element={<div className="container" style={{ padding: '40px' }}><h2>Panel de Control Admin</h2><p>Aquí gestionarás el inventario y los pedidos.</p></div>} />
-                <Route path="/perfil" element={<div className="container" style={{ padding: '40px' }}><h2>Tu Perfil</h2><p>Aquí verás tus pedidos y datos.</p></div>} />
+                <Route
+                  path="/admin"
+                  element={
+                    <ProtectedRoute adminOnly={true}>
+                      <AdminProducts />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/perfil"
+                  element={
+                    <ProtectedRoute>
+                      <Profile />
+                    </ProtectedRoute>
+                  }
+                />
               </Routes>
             </main>
             <footer style={{

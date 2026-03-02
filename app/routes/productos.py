@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from app.database import get_db
 from app.models import Producto, Categoria
@@ -14,9 +15,9 @@ router = APIRouter(prefix="/productos", tags=["productos"])
 @router.get("/", response_model=list[ProductoSchema])
 def listar_productos(
     skip: int = 0,
-    limit: int = 20,
+    limit: int = 100,
     categoria_id: int = None,
-    activo: bool = True,
+    activo: bool | None = None,
     db: Session = Depends(get_db),
 ):
     """Listar productos con filtros opcionales (público)"""
@@ -28,7 +29,15 @@ def listar_productos(
     if categoria_id:
         query = query.filter(Producto.categoria_id == categoria_id)
 
-    return query.offset(skip).limit(limit).all()
+    return query.order_by(func.lower(Producto.nombre)).offset(skip).limit(limit).all()
+
+
+@router.get("/materiales", response_model=list[str])
+def listar_materiales(db: Session = Depends(get_db)):
+    """Obtener lista única de materiales (admin)"""
+    materiales = db.query(Producto.material).distinct().order_by(func.lower(Producto.material)).all()
+    # Aplanar lista de tuplas
+    return [m[0] for m in materiales if m[0]]
 
 
 @router.get("/{producto_id}", response_model=ProductoSchema)

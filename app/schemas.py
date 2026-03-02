@@ -74,6 +74,7 @@ class ProductoUpdate(BaseModel):
 
 class Producto(ProductoBase):
     id: int
+    categoria: Optional[Categoria] = None
     creado_en: datetime
     actualizado_en: datetime
 

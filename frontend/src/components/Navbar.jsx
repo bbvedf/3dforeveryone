@@ -104,15 +104,15 @@ const Navbar = () => {
 
                 <h3 style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '10px' }}>Navegación</h3>
 
-                <Link to="/" onClick={toggleMenu} style={{ display: 'flex', alignItems: 'center', gap: '15px', fontSize: '18px', fontWeight: 600, padding: '10px 0', color: 'var(--text-main)' }}>
+                <Link to="/" onClick={toggleMenu} className="drawer-item">
                     <HomeIcon /> Catálogo
                 </Link>
-                <Link to="/categorias" onClick={toggleMenu} style={{ display: 'flex', alignItems: 'center', gap: '15px', fontSize: '18px', fontWeight: 600, padding: '10px 0', color: 'var(--text-main)' }}>
+                <Link to="/categorias" onClick={toggleMenu} className="drawer-item">
                     <CategoryIcon /> Categorías
                 </Link>
 
                 {isAdmin && (
-                    <Link to="/admin" onClick={toggleMenu} style={{ display: 'flex', alignItems: 'center', gap: '15px', fontSize: '18px', fontWeight: 600, color: 'var(--accent)', padding: '10px 0' }}>
+                    <Link to="/admin" onClick={toggleMenu} className="drawer-item" style={{ color: 'var(--accent) !important' }}>
                         <AdminIcon /> Panel de Control
                     </Link>
                 )}
@@ -121,25 +121,14 @@ const Navbar = () => {
                     <hr style={{ border: 'none', borderTop: '1px solid var(--card-border)', marginBottom: '30px' }} />
 
                     <h3 style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '15px' }}>Preferencias</h3>
-                    <div
-                        onClick={toggleTheme}
-                        style={{
-                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                            padding: '15px 20px', borderRadius: '15px',
-                            background: 'rgba(58, 134, 255, 0.05)',
-                            border: '1px solid var(--card-border)', cursor: 'pointer', transition: 'all 0.2s ease',
-                            marginBottom: '20px'
-                        }}
-                    >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px', fontSize: '18px', fontWeight: 600 }}>
-                            {isDark ? <SunIcon /> : <MoonIcon />}
-                            Modo {isDark ? 'Claro' : 'Oscuro'}
-                        </div>
+                    <div onClick={toggleTheme} className="drawer-item">
+                        {isDark ? <SunIcon /> : <MoonIcon />}
+                        Modo {isDark ? 'Claro' : 'Oscuro'}
                     </div>
 
                     {user ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                            <Link to="/perfil" onClick={toggleMenu} style={{ display: 'flex', alignItems: 'center', gap: '15px', fontSize: '18px', fontWeight: 600, color: 'var(--text-main)' }}>
+                            <Link to="/perfil" onClick={toggleMenu} className="drawer-item">
                                 <ProfileIcon /> {user.nombre}
                             </Link>
                             <button

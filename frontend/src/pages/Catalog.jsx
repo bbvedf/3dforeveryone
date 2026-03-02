@@ -8,7 +8,8 @@ const Catalog = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await api.get('/productos/');
+                // Solo productos que SÍ están a la venta
+                const response = await api.get('/productos/?activo=true');
                 setProducts(response.data);
             } catch (err) {
                 console.error('Error fetching products:', err);
