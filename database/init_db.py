@@ -67,10 +67,6 @@ def init_db():
         print(f"✓ {len(productos)} productos creados")
         print(f"✓ {len(clientes)} usuarios creados (1 admin + {len(clientes)-1} clientes)")
         print()
-        print("─── Credenciales admin ───────────────────────")
-        print("  Email:     admin@3dforeveryone.com")
-        print("  Password:  Admin3D2024!")
-        print("─────────────────────────────────────────────")
 
     except Exception as e:
         db.rollback()
