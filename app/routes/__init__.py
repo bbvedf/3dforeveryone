@@ -1,0 +1,1 @@
+# Paquete de aplicación FastAPI para Tienda 3D
