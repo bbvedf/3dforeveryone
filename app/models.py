@@ -5,6 +5,11 @@ import enum
 from app.database import Base
 
 
+class RolUsuario(str, enum.Enum):
+    ADMIN = "admin"
+    CLIENTE = "cliente"
+
+
 class Categoria(Base):
     __tablename__ = "categorias"
 
@@ -53,6 +58,7 @@ class Cliente(Base):
     codigo_postal = Column(String(20), nullable=True)
     pais = Column(String(100), nullable=True)
     contraseña_hash = Column(String(255), nullable=False)
+    rol = Column(Enum(RolUsuario), default=RolUsuario.CLIENTE, nullable=False)
     activo = Column(Boolean, default=True)
     creado_en = Column(DateTime, default=datetime.utcnow)
 

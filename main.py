@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.database import engine, Base
 from app.models import Categoria, Producto, Cliente, Pedido, ItemPedido
-from app.routes import categorias, productos, clientes, pedidos
+from app.routes import categorias, productos, clientes, pedidos, auth
 
 # Crear tablas
 Base.metadata.create_all(bind=engine)
@@ -27,6 +27,7 @@ app.add_middleware(
 )
 
 # Registrar rutas
+app.include_router(auth.router)
 app.include_router(categorias.router)
 app.include_router(productos.router)
 app.include_router(clientes.router)

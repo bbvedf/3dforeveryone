@@ -1,9 +1,22 @@
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import Optional, List
+from enum import Enum
 
 
-# CATEGORIAS
+# ── Roles ──────────────────────────────────────────────────────────────────────
+class RolUsuario(str, Enum):
+    ADMIN = "admin"
+    CLIENTE = "cliente"
+
+
+# ── Token JWT ──────────────────────────────────────────────────────────────────
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+# ── Categorías ─────────────────────────────────────────────────────────────────
 class CategoriaBase(BaseModel):
     nombre: str
     descripcion: Optional[str] = None
@@ -28,7 +41,7 @@ class Categoria(CategoriaBase):
         from_attributes = True
 
 
-# PRODUCTOS
+# ── Productos ──────────────────────────────────────────────────────────────────
 class ProductoBase(BaseModel):
     nombre: str
     descripcion: Optional[str] = None
@@ -68,7 +81,7 @@ class Producto(ProductoBase):
         from_attributes = True
 
 
-# CLIENTES
+# ── Clientes ───────────────────────────────────────────────────────────────────
 class ClienteBase(BaseModel):
     email: EmailStr
     nombre: str
@@ -96,6 +109,7 @@ class ClienteUpdate(BaseModel):
 
 class Cliente(ClienteBase):
     id: int
+    rol: RolUsuario
     activo: bool
     creado_en: datetime
 
@@ -103,7 +117,7 @@ class Cliente(ClienteBase):
         from_attributes = True
 
 
-# ITEMS PEDIDO
+# ── Items de pedido ────────────────────────────────────────────────────────────
 class ItemPedidoBase(BaseModel):
     producto_id: int
     cantidad: int
@@ -123,7 +137,7 @@ class ItemPedido(ItemPedidoBase):
         from_attributes = True
 
 
-# PEDIDOS
+# ── Pedidos ────────────────────────────────────────────────────────────────────
 class PedidoBase(BaseModel):
     direccion_envio: str
     notas: Optional[str] = None
@@ -140,6 +154,7 @@ class PedidoUpdate(BaseModel):
 
 class PedidoResponse(BaseModel):
     id: int
+    cliente_id: int
     numero_pedido: str
     estado: str
     total: float
