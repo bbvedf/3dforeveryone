@@ -7,9 +7,8 @@ Aplicación profesional y moderna para gestionar una tienda online de productos 
 - **🔐 Seguridad Avanzada**: Autenticación basada en JWT (JSON Web Tokens) con sistema de roles (Admin y Cliente).
 - **🎨 Frontend Premium**: Interfaz moderna con estética *Dark Mode* y *Glassmorphism* construida con React 19 y Vite.
 - **🔌 API Robusta**: Backend con FastAPI, validación de datos Pydantic v2 y ORM SQLAlchemy 2.0.
-- **🗂️ Gestión de Catálogo**: CRUD completo de productos y categorías con filtrado dinámico.
-- **📦 Pedidos Inteligentes**: Sistema de pedidos con control de stock automático y gestión de estados.
-- **🐳 Dockerizado**: Despliegue en un solo comando con contenedores para DB, API y UI.
+- **🗂️ Gestión de Catálogo Pro**: CRUD avanzado de productos y categorías con búsqueda en tiempo real, filtros tipo Excel, paginación y ordenación dinámica.
+- **🛡️ Integridad de Datos**: Sistema de borrado inteligente (soft/hard delete) con validación de dependencias entre productos y categorías.
 
 ---
 
@@ -18,17 +17,16 @@ Aplicación profesional y moderna para gestionar una tienda online de productos 
 ```text
 3dforeveryone/
 ├── app/                # Backend API (FastAPI)
-│   ├── routes/         # Endpoints (Categorías, Productos, Clientes, Pedidos, Auth)
-│   ├── models.py       # Modelos de Base de Datos (SQLAlchemy)
-│   ├── schemas.py      # Validaciones y esquemas (Pydantic)
+│   ├── routes/         # Endpoints (Categorías, Productos, Usuarios, Auth)
+│   ├── models.py       # Modelos de Base de Datos (SQLAlchemy 2.0)
+│   ├── schemas.py      # Validaciones y esquemas (Pydantic v2)
 │   ├── security.py     # Lógica de JWT, Hashing y Roles
 │   └── database.py     # Configuración de conexión PostgreSQL
-├── frontend/           # Frontend (React + Vite)
+├── frontend/           # Frontend (React 19 + Vite)
 │   ├── src/
 │   │   ├── api/        # Cliente Axios centralizado con Interceptores
-│   │   ├── context/    # Estado global de Autenticación
-│   │   ├── components/ # Componentes UI (Navbar, etc.)
-│   │   └── pages/      # Páginas (Catálogo, Login, Admin)
+│   │   ├── components/ # Modales Premium, Navbar, ProtectedRoutes
+│   │   └── pages/      # Catálogo, Admin (Productos/Categorías), Auth
 │   └── Dockerfile      # Docker para React (Node 22)
 ├── database/           # Scripts de inicialización
 ├── .env                # Variables de entorno (NO subido a Git)
@@ -39,19 +37,17 @@ Aplicación profesional y moderna para gestionar una tienda online de productos 
 
 ## 🛠️ Instalación y Arranque Rápido
 
-### 1. Clonar el repositorio y configurar entorno
+### 1. Preparar Entorno
 ```bash
 cp .env.example .env
-# El archivo .env ya viene pre-configurado con credenciales de desarrollo
 ```
 
-### 2. Levantar el Stack completo con Docker
+### 2. Levantar el Stack Completo
 ```bash
 docker-compose up -d --build
 ```
-*Este comando arrancará la Base de Datos, la API de FastAPI y el Frontend de React.*
 
-### 3. Inicializar la Base de Datos con Datos de Ejemplo
+### 3. Semilla de Datos (Opcional)
 ```bash
 docker-compose exec api python -m database.init_db
 ```
@@ -62,7 +58,7 @@ docker-compose exec api python -m database.init_db
 
 ### Perfil Administrador
 - **Email:** `admin@3dforeveryone.com`
-- **Password:** `Admin3D2024!`
+- **Password:** `Admin3D2024!` (Acceso a Panel de Control)
 
 ### Perfil Cliente
 - **Email:** `juan@example.com`
@@ -75,18 +71,19 @@ docker-compose exec api python -m database.init_db
 | Servicio | URL |
 | :--- | :--- |
 | **🚀 Tienda (Frontend)** | [http://localhost:5173](http://localhost:5173) |
-| **📚 Documentación Swagger** | [http://localhost:8000/docs](http://localhost:8000/docs) |
-| **🗄️ API Healthcheck** | [http://localhost:8000/health](http://localhost:8000/health) |
+| **💠 Gestión Inventario** | [http://localhost:5173/admin](http://localhost:5173/admin) |
+| **📚 Docs Swagger** | [http://localhost:8000/docs](http://localhost:8000/docs) |
 
 ---
 
-## 📊 Roadmap de Próximas Mejoras
+## 📊 Roadmap y Estado del Proyecto
 
-- [ ] **Admin Panel**: CRUD visual de productos para administradores.
-- [ ] **Carrito de Compra**: Gestión de items y persistencia en sesión.
-- [ ] **Subida de Imágenes**: Soporte para fotos reales de las piezas 3D.
-- [ ] **Pasarela de Pagos**: Integración con Stripe o PayPal.
-- [ ] **Búsqueda**: Filtros avanzados por material, precio y categoría.
+- [x] **Módulo de Administración**: Gestión avanzada de inventario y categorías (Completado ✅)
+- [x] **Filtros y Búsqueda**: Motor de búsqueda dinámico y filtros Excel-style (Completado ✅)
+- [ ] **Registro y Perfil**: Flujo completo de registro de nuevos usuarios y edición de perfil.
+- [ ] **Gestión de Imágenes**: Sistema de carga y visualización de archivos para modelos 3D.
+- [ ] **Carrito de Compra**: Gestión de items y persistencia.
+- [ ] **Pasarela de Pagos**: Integración real con Stripe.
 
 ---
 

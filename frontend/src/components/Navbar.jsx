@@ -107,14 +107,17 @@ const Navbar = () => {
                 <Link to="/" onClick={toggleMenu} className="drawer-item">
                     <HomeIcon /> Catálogo
                 </Link>
-                <Link to="/categorias" onClick={toggleMenu} className="drawer-item">
-                    <CategoryIcon /> Categorías
-                </Link>
 
                 {isAdmin && (
-                    <Link to="/admin" onClick={toggleMenu} className="drawer-item" style={{ color: 'var(--accent) !important' }}>
-                        <AdminIcon /> Panel de Control
-                    </Link>
+                    <>
+                        <h3 style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '2px', marginTop: '20px', marginBottom: '10px' }}>Administración</h3>
+                        <Link to="/admin" onClick={toggleMenu} className="drawer-item" style={{ color: 'var(--accent) !important' }}>
+                            <AdminIcon /> Inventario
+                        </Link>
+                        <Link to="/admin/categorias" onClick={toggleMenu} className="drawer-item" style={{ color: 'var(--accent) !important' }}>
+                            <CategoryIcon /> Categorías
+                        </Link>
+                    </>
                 )}
 
                 <div style={{ marginTop: 'auto', paddingBottom: '30px' }}>

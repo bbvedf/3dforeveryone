@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 
 from app.database import get_db
-from app.models import Categoria
+from app.models import Categoria, Producto
 from app.schemas import CategoriaCreate, CategoriaUpdate, Categoria as CategoriaSchema
 from app.security import get_current_user, require_admin
 
@@ -17,6 +17,11 @@ def listar_categorias(skip: int = 0, limit: int = 100, db: Session = Depends(get
     """Listar todas las categorías (público)"""
     return db.query(Categoria).filter(Categoria.activa == True).order_by(func.lower(Categoria.nombre)).offset(skip).limit(limit).all()
 
+@router.get("/admin", response_model=list[CategoriaSchema], dependencies=[Depends(require_admin)])
+def listar_categorias_admin(db: Session = Depends(get_db)):
+    """Listar todas las categorías incluyendo inactivas (solo admin)"""
+    return db.query(Categoria).order_by(func.lower(Categoria.nombre)).all()
+
 
 @router.get("/{categoria_id}", response_model=CategoriaSchema)
 def obtener_categoria(categoria_id: int, db: Session = Depends(get_db)):
@@ -28,6 +33,9 @@ def obtener_categoria(categoria_id: int, db: Session = Depends(get_db)):
 
 
 # ── Solo admin ─────────────────────────────────────────────────────────────────
+
+
+
 
 @router.post("/", response_model=CategoriaSchema, dependencies=[Depends(require_admin)])
 def crear_categoria(categoria: CategoriaCreate, db: Session = Depends(get_db)):
@@ -57,12 +65,32 @@ def actualizar_categoria(
 
 
 @router.delete("/{categoria_id}", dependencies=[Depends(require_admin)])
-def eliminar_categoria(categoria_id: int, db: Session = Depends(get_db)):
-    """Eliminar una categoría (solo admin)"""
+def desactivar_categoria(categoria_id: int, db: Session = Depends(get_db)):
+    """Desactivar una categoría (solo admin) — eliminación lógica"""
     db_categoria = db.query(Categoria).filter(Categoria.id == categoria_id).first()
     if not db_categoria:
         raise HTTPException(status_code=404, detail="Categoría no encontrada")
 
+    db_categoria.activa = False
+    db.commit()
+    return {"mensaje": "Categoría ocultada exitosamente"}
+
+
+@router.delete("/{categoria_id}/eliminar", dependencies=[Depends(require_admin)])
+def eliminar_categoria_permanente(categoria_id: int, db: Session = Depends(get_db)):
+    """Eliminar permanentemente una categoría (solo admin) — Hard Delete"""
+    db_categoria = db.query(Categoria).filter(Categoria.id == categoria_id).first()
+    if not db_categoria:
+        raise HTTPException(status_code=404, detail="Categoría no encontrada")
+
+    # Comprobar si tiene productos asociados
+    tiene_productos = db.query(Producto).filter(Producto.categoria_id == categoria_id).first()
+    if tiene_productos:
+        raise HTTPException(
+            status_code=400, 
+            detail="No se puede eliminar una categoría que tiene productos asociados. Primero mueve o elimina los productos."
+        )
+
     db.delete(db_categoria)
     db.commit()
-    return {"mensaje": "Categoría eliminada exitosamente"}
+    return {"mensaje": "Categoría eliminada permanentemente de la base de datos"}

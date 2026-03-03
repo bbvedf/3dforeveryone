@@ -7,7 +7,9 @@ import Catalog from './pages/Catalog';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
+import Categories from './pages/Categories';
 import AdminProducts from './pages/admin/AdminProducts';
+import AdminCategories from './pages/admin/AdminCategories';
 import ProtectedRoute from './components/ProtectedRoute';
 
 const App = () => {
@@ -29,12 +31,20 @@ const App = () => {
                 <Route path="/" element={<Catalog />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/registro" element={<Register />} />
-                <Route path="/categorias" element={<div className="container" style={{ padding: '40px' }}><h2>Categorías Premium</h2><p>Listado próximamente...</p></div>} />
+                <Route path="/categorias" element={<Categories />} />
                 <Route
                   path="/admin"
                   element={
                     <ProtectedRoute adminOnly={true}>
                       <AdminProducts />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/categorias"
+                  element={
+                    <ProtectedRoute adminOnly={true}>
+                      <AdminCategories />
                     </ProtectedRoute>
                   }
                 />
