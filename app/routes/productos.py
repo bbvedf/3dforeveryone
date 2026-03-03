@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
 
 from app.database import get_db
@@ -17,27 +17,53 @@ def listar_productos(
     skip: int = 0,
     limit: int = 100,
     categoria_id: int = None,
+    material: str | None = None,
     activo: bool | None = None,
+    search: str | None = None,
+    order_by: str = "nombre",
+    order_dir: str = "asc",
     db: Session = Depends(get_db),
 ):
-    """Listar productos con filtros opcionales (público)"""
-    query = db.query(Producto)
+    """Listar productos con filtros opcionales, búsqueda y ordenación dinámica"""
+    query = db.query(Producto).options(joinedload(Producto.categoria))
 
     if activo is not None:
         query = query.filter(Producto.activo == activo)
 
     if categoria_id:
         query = query.filter(Producto.categoria_id == categoria_id)
+        
+    if material:
+        query = query.filter(Producto.material == material)
+        
+    if search:
+        query = query.filter(Producto.nombre.ilike(f"%{search}%"))
 
-    return query.order_by(func.lower(Producto.nombre)).offset(skip).limit(limit).all()
+    # Ordenación dinámica
+    if order_by == "categoria":
+        query = query.join(Categoria)
+        columna = Categoria.nombre
+    else:
+        columna = getattr(Producto, order_by, Producto.nombre)
+    
+    # Si es un campo de texto (nombre de producto o de categoría), usamos func.lower
+    sort_expr = func.lower(columna) if order_by in ["nombre", "categoria", "material"] else columna
+    
+    if order_dir == "desc":
+        query = query.order_by(sort_expr.desc())
+    else:
+        query = query.order_by(sort_expr.asc())
+
+    return query.offset(skip).limit(limit).all()
 
 
 @router.get("/materiales", response_model=list[str])
 def listar_materiales(db: Session = Depends(get_db)):
     """Obtener lista única de materiales (admin)"""
-    materiales = db.query(Producto.material).distinct().order_by(func.lower(Producto.material)).all()
-    # Aplanar lista de tuplas
-    return [m[0] for m in materiales if m[0]]
+    materiales = db.query(Producto.material).distinct().all()
+    # Aplanar y ordenar en Python (case-insensitive) para evitar error SQL de DISTINCT vs ORDER BY
+    lista = [m[0] for m in materiales if m[0]]
+    return sorted(lista, key=lambda s: s.lower())
 
 
 @router.get("/{producto_id}", response_model=ProductoSchema)
@@ -83,12 +109,24 @@ def actualizar_producto(
 
 
 @router.delete("/{producto_id}", dependencies=[Depends(require_admin)])
-def eliminar_producto(producto_id: int, db: Session = Depends(get_db)):
-    """Desactivar un producto (solo admin) — eliminación lógica"""
+def desactivar_producto(producto_id: int, db: Session = Depends(get_db)):
+    """Desactivar un producto (solo admin) — eliminación lógica (Soft Delete)"""
     db_producto = db.query(Producto).filter(Producto.id == producto_id).first()
     if not db_producto:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
 
     db_producto.activo = False
     db.commit()
-    return {"mensaje": "Producto desactivado exitosamente"}
+    return {"mensaje": "Producto ocultado exitosamente"}
+
+
+@router.delete("/{producto_id}/eliminar", dependencies=[Depends(require_admin)])
+def eliminar_producto_permanente(producto_id: int, db: Session = Depends(get_db)):
+    """Eliminar permanentemente un producto de la base de datos (Hard Delete)"""
+    db_producto = db.query(Producto).filter(Producto.id == producto_id).first()
+    if not db_producto:
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
+
+    db.delete(db_producto)
+    db.commit()
+    return {"mensaje": "Producto eliminado permanentemente de la base de datos"}
