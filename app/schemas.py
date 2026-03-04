@@ -53,6 +53,7 @@ class ProductoBase(BaseModel):
     tiempo_impresion_horas: Optional[float] = None
     stock: int = 0
     activo: bool = True
+    imagen_url: Optional[str] = None
 
 
 class ProductoCreate(ProductoBase):
@@ -70,6 +71,7 @@ class ProductoUpdate(BaseModel):
     tiempo_impresion_horas: Optional[float] = None
     stock: Optional[int] = None
     activo: Optional[bool] = None
+    imagen_url: Optional[str] = None
 
 
 class Producto(ProductoBase):
@@ -92,6 +94,7 @@ class ClienteBase(BaseModel):
     ciudad: Optional[str] = None
     codigo_postal: Optional[str] = None
     pais: Optional[str] = None
+    avatar_url: Optional[str] = None
 
 
 class ClienteCreate(ClienteBase):

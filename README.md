@@ -21,10 +21,10 @@ Aplicación profesional y moderna para gestionar una tienda online de productos 
 - **Modo Claro/Oscuro**: Toggle persistente con transición suave y favicon dinámico.
 
 ### 🛠️ Panel de Administración
-- **📋 Inventario (Productos)**: CRUD avanzado con filtros Excel-style, búsqueda en tiempo real, paginación, ordenación dinámica y modal de edición.
-- **🏷️ Categorías**: CRUD completo con soft/hard delete (desactivar → eliminar) y validación de dependencias con productos.
-- **🛒 Gestión de Pedidos**: Tabla global con filas **acordeón expandibles** (click para ver líneas detalladas del pedido, dirección y notas). Cambio de estado con selector visual (Pendiente → Confirmado → Procesando → Enviado → Entregado → Cancelado).
-- **👥 Directorio de Clientes**: Dos etapas de baja — **Desactivar** (soft delete, conserva pedidos) → el cliente aparece como *Inactivo* → **Eliminar definitivamente** (hard delete de BD). Protegido: no se puede afectar a admins.
+- **📋 Listados Unificados**: Las tablas de Inventario, Categorías, Pedidos y Clientes cuentan con filtros tipo Excel, paginación integrada, ordenación interactiva por cabecera y búsqueda robusta independiente de tildes o acentos (vía PostgreSQL `unaccent`).
+- **🛒 Gestión de Pedidos**: Tabla global con filas **acordeón expandibles** (click para ver líneas detalladas del pedido, dirección y notas). Cambio de estado con selector visual.
+- **👥 Directorio de Clientes**: Dos etapas de baja — **Desactivar** (soft delete, conserva pedidos) → el cliente aparece como *Inactivo* → **Eliminar definitivamente** (hard delete de BD).
+- **🖼️ Gestión de Medios**: Subida y visualización de fotos de productos y avatares dinámicos (servidos vía Vite Proxy con prevención de caché en el navegador usando sufijos UUID).
 
 ### 🏗️ Infraestructura y Calidad
 - **🔌 API Robusta**: FastAPI con validación Pydantic v2, ORM SQLAlchemy 2.0, respuestas enriquecidas (items de pedido incluyen datos del producto y cliente).
@@ -125,7 +125,8 @@ docker-compose exec api python -m database.init_db
 - [x] **Checkout y Pedidos**: Formulario de envío, confirmación, historial detallado (✅)
 - [x] **Panel Admin — Pedidos**: Acordeón con detalle, cambio de estado logístico (✅)
 - [x] **Panel Admin — Clientes**: Directorio completo con soft/hard delete (✅)
-- [ ] **Imágenes de Productos**: Subida y visualización de fotos de piezas 3D
+- [x] **Panel Admin — Interfaz Unificada**: Búsqueda global (unaccent), ordenación reactiva y paginación en todas las tablas (✅)
+- [x] **Imágenes y Multimedia**: Subida nativa de imágenes físicas (Pillow) con proxy local (✅)
 - [ ] **Pasarela de Pagos**: Integración con Stripe
 - [ ] **Notificaciones**: Emails transaccionales (confirmación de pedido, envío)
 - [ ] **Seguimiento**: Tracking público de pedido por número

@@ -37,7 +37,7 @@ def listar_productos(
         query = query.filter(Producto.material == material)
         
     if search:
-        query = query.filter(Producto.nombre.ilike(f"%{search}%"))
+        query = query.filter(func.unaccent(Producto.nombre).ilike(func.unaccent(f"%{search}%")))
 
     # Ordenación dinámica
     if order_by == "categoria":

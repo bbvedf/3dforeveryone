@@ -137,8 +137,29 @@ const Checkout = () => {
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '25px' }}>
                         {cartItems.map(item => (
-                            <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
-                                <span>{item.quantity}x {item.nombre}</span>
+                            <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '14px', gap: '10px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <div style={{
+                                        width: '32px',
+                                        height: '32px',
+                                        borderRadius: '6px',
+                                        overflow: 'hidden',
+                                        background: item.imagen_url ? 'none' : 'var(--gradient-main)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontSize: '12px',
+                                        flexShrink: 0,
+                                        border: '1px solid rgba(255,255,255,0.05)'
+                                    }}>
+                                        {item.imagen_url ? (
+                                            <img src={`${item.imagen_url}`} alt={item.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        ) : (
+                                            '📦'
+                                        )}
+                                    </div>
+                                    <span>{item.quantity}x {item.nombre}</span>
+                                </div>
                                 <span style={{ fontWeight: 700 }}>{(item.precio * item.quantity).toFixed(2)}€</span>
                             </div>
                         ))}

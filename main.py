@@ -1,12 +1,16 @@
+from pathlib import Path
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.database import engine, Base
 from app.models import Categoria, Producto, Cliente, Pedido, ItemPedido
-from app.routes import categorias, productos, clientes, pedidos, auth
+from app.routes import categorias, productos, clientes, pedidos, auth, uploads
 
-# Crear tablas
+# Crear tablas y directorios necesarios
 Base.metadata.create_all(bind=engine)
+Path("/app/uploads/productos").mkdir(parents=True, exist_ok=True)
+Path("/app/uploads/avatares").mkdir(parents=True, exist_ok=True)
 
 # Crear aplicación FastAPI
 app = FastAPI(
@@ -32,6 +36,10 @@ app.include_router(categorias.router)
 app.include_router(productos.router)
 app.include_router(clientes.router)
 app.include_router(pedidos.router)
+app.include_router(uploads.router)
+
+# Servir archivos estáticos (imágenes subidas)
+app.mount("/uploads", StaticFiles(directory="/app/uploads"), name="uploads")
 
 
 @app.get("/")

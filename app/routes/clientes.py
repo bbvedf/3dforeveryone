@@ -91,9 +91,46 @@ def actualizar_cliente(
 # ── Solo admin ─────────────────────────────────────────────────────────────────
 
 @router.get("/", response_model=list[ClienteSchema], dependencies=[Depends(require_admin)])
-def listar_clientes(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    """Listar todos los clientes activos e inactivos (solo admin)"""
-    return db.query(Cliente).offset(skip).limit(limit).all()
+def listar_clientes(
+    skip: int = 0,
+    limit: int = 100,
+    search: str | None = None,
+    activo: bool | None = None,
+    order_by: str = "nombre",
+    order_dir: str = "asc",
+    db: Session = Depends(get_db)
+):
+    """Listar todos los clientes activos e inactivos con búsqueda y ordenación (solo admin)"""
+    from sqlalchemy import func
+    query = db.query(Cliente)
+
+    if activo is not None:
+        query = query.filter(Cliente.activo == activo)
+
+    if search:
+        termino = func.unaccent(f"%{search}%")
+        query = query.filter(
+            (func.unaccent(Cliente.nombre).ilike(termino)) |
+            (func.unaccent(Cliente.apellido).ilike(termino)) |
+            (func.concat(func.unaccent(Cliente.nombre), ' ', func.unaccent(Cliente.apellido)).ilike(termino)) |
+            (func.unaccent(Cliente.email).ilike(termino))
+        )
+
+    # Ordenación dinámica
+    columna = getattr(Cliente, order_by, Cliente.nombre)
+    
+    # Usar minúsculas para orden alfabético si es texto
+    if order_by in ["nombre", "apellido", "email"]:
+        sort_expr = func.lower(columna)
+    else:
+        sort_expr = columna
+
+    if order_dir == "desc":
+        query = query.order_by(sort_expr.desc())
+    else:
+        query = query.order_by(sort_expr.asc())
+
+    return query.offset(skip).limit(limit).all()
 
 
 @router.delete("/{cliente_id}", dependencies=[Depends(require_admin)])

@@ -10,6 +10,9 @@ const ProductModal = ({ product, isOpen, onClose, onSave }) => {
     const [showNewMaterialInput, setShowNewMaterialInput] = useState(false);
     const [newMaterialName, setNewMaterialName] = useState('');
 
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
+    const [uploading, setUploading] = useState(false);
     const [formData, setFormData] = useState({
         nombre: '',
         descripcion: '',
@@ -25,7 +28,6 @@ const ProductModal = ({ product, isOpen, onClose, onSave }) => {
 
     const fetchData = async () => {
         try {
-            // Usamos promise individual para que si falla uno (como materiales en DB limpia) no bloquee el otro
             const catPromise = api.get('/categorias/').catch(e => { console.error("Error cat:", e); return { data: [] }; });
             const matPromise = api.get('/productos/materiales').catch(e => { console.error("Error mat:", e); return { data: [] }; });
 
@@ -43,6 +45,8 @@ const ProductModal = ({ product, isOpen, onClose, onSave }) => {
             fetchData();
             setShowNewCategoryInput(false);
             setShowNewMaterialInput(false);
+            setSelectedFile(null);
+            setImagePreview(null);
         }
     }, [isOpen]);
 
@@ -52,6 +56,12 @@ const ProductModal = ({ product, isOpen, onClose, onSave }) => {
                 ...product,
                 categoria_id: product.categoria_id || ''
             });
+            if (product.imagen_url) {
+                // Asumimos que la URL es relativa y que la API corre en el puerto 8000
+                // O mejor, usamos el baseURL de la instancia de api si está configurado para incluir el host
+                // Por simplicidad, si la imagen_url empieza por / la tratamos como absoluta al servidor
+                setImagePreview(`${product.imagen_url}`);
+            }
         } else {
             setFormData({
                 nombre: '',
@@ -74,6 +84,14 @@ const ProductModal = ({ product, isOpen, onClose, onSave }) => {
             ...prev,
             [name]: type === 'checkbox' ? checked : (type === 'number' ? parseFloat(value) : value)
         }));
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setSelectedFile(file);
+            setImagePreview(URL.createObjectURL(file));
+        }
     };
 
     const handleAddCategory = async () => {
@@ -105,16 +123,32 @@ const ProductModal = ({ product, isOpen, onClose, onSave }) => {
             alert('Por favor selecciona una categoría');
             return;
         }
+
+        setUploading(true);
         try {
-            if (product?.id) {
-                await api.put(`/productos/${product.id}`, formData);
+            let productId = product?.id;
+            if (productId) {
+                await api.put(`/productos/${productId}`, formData);
             } else {
-                await api.post('/productos/', formData);
+                const res = await api.post('/productos/', formData);
+                productId = res.data.id;
             }
+
+            // Subir imagen si hay una seleccionada
+            if (selectedFile && productId) {
+                const formDataFile = new FormData();
+                formDataFile.append('file', selectedFile);
+                await api.post(`/uploads/producto/${productId}`, formDataFile, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+            }
+
             onSave();
             onClose();
         } catch (err) {
             alert('Error guardando producto: ' + (err.response?.data?.detail || err.message));
+        } finally {
+            setUploading(false);
         }
     };
 
@@ -128,7 +162,7 @@ const ProductModal = ({ product, isOpen, onClose, onSave }) => {
             padding: '20px'
         }}>
             <div className="glass-panel animate-fade-in" style={{
-                padding: '40px', width: '100%', maxWidth: '750px',
+                padding: '40px', width: '100%', maxWidth: '850px',
                 maxHeight: '90vh', overflowY: 'auto',
                 border: '1px solid var(--card-border)',
                 boxShadow: '0 25px 60px rgba(0,0,0,0.5)',
@@ -140,75 +174,113 @@ const ProductModal = ({ product, isOpen, onClose, onSave }) => {
                     <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '32px', cursor: 'pointer' }}>&times;</button>
                 </div>
 
-                <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '25px' }}>
-                    <div style={{ gridColumn: 'span 2' }}>
-                        <label style={{ display: 'block', fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Nombre Comercial *</label>
-                        <input name="nombre" value={formData.nombre} onChange={handleChange} required autoFocus style={{ width: '100%', padding: '15px', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', color: 'var(--text-main)', border: '1px solid var(--card-border)' }} />
-                    </div>
-
-                    <div style={{ gridColumn: 'span 2' }}>
-                        <label style={{ display: 'block', fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Descripción del Producto</label>
-                        <textarea name="descripcion" value={formData.descripcion} onChange={handleChange} rows="3" style={{ width: '100%', padding: '15px', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', color: 'var(--text-main)', border: '1px solid var(--card-border)' }} />
-                    </div>
-
-                    <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                            <label style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Categoría *</label>
-                            <button type="button" onClick={() => setShowNewCategoryInput(!showNewCategoryInput)} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontSize: '12px', cursor: 'pointer', fontWeight: 800 }}>{showNewCategoryInput ? 'Cancelar' : '+ Nueva'}</button>
+                <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: '30px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                        <div style={{ gridColumn: 'span 2' }}>
+                            <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Nombre Comercial *</label>
+                            <input name="nombre" value={formData.nombre} onChange={handleChange} required autoFocus style={{ width: '100%', padding: '15px', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', color: 'var(--text-main)', border: '1px solid var(--card-border)' }} />
                         </div>
-                        {showNewCategoryInput ? (
-                            <div style={{ display: 'flex', gap: '8px' }}>
-                                <input placeholder="Nombre..." value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)} style={{ flex: 1, padding: '12px', borderRadius: '10px', background: 'rgba(58, 134, 255, 0.1)', color: 'var(--text-main)', border: '1px solid var(--primary)' }} />
-                                <button type="button" onClick={handleAddCategory} style={{ padding: '0 15px', background: 'var(--primary)', borderRadius: '10px', color: 'white', fontWeight: 700 }}>Crear</button>
-                            </div>
-                        ) : (
-                            <select name="categoria_id" value={formData.categoria_id} onChange={handleChange} required style={{ width: '100%', padding: '15px', borderRadius: '12px', background: 'var(--background)', color: 'var(--text-main)', border: '1px solid var(--card-border)' }}>
-                                <option value="">Seleccionar...</option>
-                                {categories.map(c => (
-                                    <option key={c.id} value={c.id}>{c.nombre}</option>
-                                ))}
-                            </select>
-                        )}
-                    </div>
 
-                    <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                            <label style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Material *</label>
-                            <button type="button" onClick={() => setShowNewMaterialInput(!showNewMaterialInput)} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontSize: '12px', cursor: 'pointer', fontWeight: 800 }}>{showNewMaterialInput ? 'Cancelar' : '+ Nuevo'}</button>
+                        <div style={{ gridColumn: 'span 2' }}>
+                            <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Descripción</label>
+                            <textarea name="descripcion" value={formData.descripcion} onChange={handleChange} rows="2" style={{ width: '100%', padding: '15px', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', color: 'var(--text-main)', border: '1px solid var(--card-border)' }} />
                         </div>
-                        {showNewMaterialInput ? (
-                            <div style={{ display: 'flex', gap: '8px' }}>
-                                <input placeholder="Ej: PLA+, Resina..." value={newMaterialName} onChange={(e) => setNewMaterialName(e.target.value)} style={{ flex: 1, padding: '12px', borderRadius: '10px', background: 'rgba(58, 134, 255, 0.1)', color: 'var(--text-main)', border: '1px solid var(--primary)' }} />
-                                <button type="button" onClick={handleAddMaterial} style={{ padding: '0 15px', background: 'var(--primary)', borderRadius: '10px', color: 'white', fontWeight: 700 }}>Añadir</button>
+
+                        <div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                <label style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Categoría *</label>
+                                <button type="button" onClick={() => setShowNewCategoryInput(!showNewCategoryInput)} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontSize: '11px', cursor: 'pointer', fontWeight: 800 }}>{showNewCategoryInput ? 'Cancelar' : '+ Nueva'}</button>
                             </div>
-                        ) : (
-                            <select name="material" value={formData.material} onChange={handleChange} required style={{ width: '100%', padding: '15px', borderRadius: '12px', background: 'var(--background)', color: 'var(--text-main)', border: '1px solid var(--card-border)' }}>
-                                <option value="">Seleccionar...</option>
-                                {existingMaterials.sort().map(m => (
-                                    <option key={m} value={m}>{m}</option>
-                                ))}
-                            </select>
-                        )}
+                            {showNewCategoryInput ? (
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <input placeholder="Nombre..." value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)} style={{ flex: 1, padding: '12px', borderRadius: '10px', background: 'rgba(58, 134, 255, 0.1)', color: 'var(--text-main)', border: '1px solid var(--primary)' }} />
+                                    <button type="button" onClick={handleAddCategory} style={{ padding: '0 15px', background: 'var(--primary)', borderRadius: '10px', color: 'white', fontWeight: 700 }}>Crear</button>
+                                </div>
+                            ) : (
+                                <select name="categoria_id" value={formData.categoria_id} onChange={handleChange} required style={{ width: '100%', padding: '15px', borderRadius: '12px', background: 'var(--background)', color: 'var(--text-main)', border: '1px solid var(--card-border)', fontSize: '14px' }}>
+                                    <option value="">Seleccionar...</option>
+                                    {categories.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
+                                </select>
+                            )}
+                        </div>
+
+                        <div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                <label style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Material *</label>
+                                <button type="button" onClick={() => setShowNewMaterialInput(!showNewMaterialInput)} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontSize: '11px', cursor: 'pointer', fontWeight: 800 }}>{showNewMaterialInput ? 'Cancelar' : '+ Nuevo'}</button>
+                            </div>
+                            {showNewMaterialInput ? (
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <input placeholder="Ej: PLA+, Resina..." value={newMaterialName} onChange={(e) => setNewMaterialName(e.target.value)} style={{ flex: 1, padding: '12px', borderRadius: '10px', background: 'rgba(58, 134, 255, 0.1)', color: 'var(--text-main)', border: '1px solid var(--primary)' }} />
+                                    <button type="button" onClick={handleAddMaterial} style={{ padding: '0 15px', background: 'var(--primary)', borderRadius: '10px', color: 'white', fontWeight: 700 }}>Añadir</button>
+                                </div>
+                            ) : (
+                                <select name="material" value={formData.material} onChange={handleChange} required style={{ width: '100%', padding: '15px', borderRadius: '12px', background: 'var(--background)', color: 'var(--text-main)', border: '1px solid var(--card-border)', fontSize: '14px' }}>
+                                    <option value="">Seleccionar...</option>
+                                    {existingMaterials.sort().map(m => <option key={m} value={m}>{m}</option>)}
+                                </select>
+                            )}
+                        </div>
+
+                        <div>
+                            <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Precio (€) *</label>
+                            <input type="number" step="0.01" name="precio" value={formData.precio} onChange={handleChange} required style={{ width: '100%', padding: '15px', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', color: 'var(--text-main)', border: '1px solid var(--card-border)' }} />
+                        </div>
+
+                        <div>
+                            <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Stock</label>
+                            <input type="number" name="stock" value={formData.stock} onChange={handleChange} style={{ width: '100%', padding: '15px', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', color: 'var(--text-main)', border: '1px solid var(--card-border)' }} />
+                        </div>
                     </div>
 
-                    <div>
-                        <label style={{ display: 'block', fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Precio Unitario (€) *</label>
-                        <input type="number" step="0.01" name="precio" value={formData.precio} onChange={handleChange} required style={{ width: '100%', padding: '15px', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', color: 'var(--text-main)', border: '1px solid var(--card-border)' }} />
+                    {/* COLUMNA DERECHA: IMAGEN */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                        <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Imagen del Producto</label>
+                        <div style={{
+                            width: '100%', aspectRatio: '1/1', borderRadius: '20px',
+                            background: 'rgba(255,255,255,0.03)', border: '2px dashed var(--card-border)',
+                            display: 'flex', justifyContent: 'center', alignItems: 'center',
+                            overflow: 'hidden', position: 'relative', cursor: 'pointer'
+                        }}
+                            onClick={() => document.getElementById('product-image-input').click()}
+                        >
+                            {imagePreview ? (
+                                <img src={imagePreview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (
+                                <div style={{ textAlign: 'center', padding: '20px' }}>
+                                    <div style={{ fontSize: '40px', marginBottom: '10px' }}>🖼️</div>
+                                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Click para subir</div>
+                                </div>
+                            )}
+                        </div>
+                        <input
+                            id="product-image-input"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            style={{ display: 'none' }}
+                        />
+                        <p style={{ fontSize: '11px', color: 'var(--text-muted)', fontStyle: 'italic' }}>Recomendado: 800x800px WebP/PNG/JPG (Máx 5MB)</p>
                     </div>
 
-                    <div>
-                        <label style={{ display: 'block', fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Stock Actual</label>
-                        <input type="number" name="stock" value={formData.stock} onChange={handleChange} style={{ width: '100%', padding: '15px', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', color: 'var(--text-main)', border: '1px solid var(--card-border)' }} />
+                    <div style={{ gridColumn: 'span 2', display: 'flex', alignItems: 'center', gap: '15px', padding: '15px 0', borderTop: '1px solid var(--card-border)', marginTop: '10px' }}>
+                        <input type="checkbox" id="activo-check" name="activo" checked={formData.activo} onChange={handleChange} style={{ width: '20px', height: '20px', cursor: 'pointer', accentColor: 'var(--primary)' }} />
+                        <label htmlFor="activo-check" style={{ fontSize: '15px', fontWeight: 600, cursor: 'pointer', color: 'var(--text-main)' }}>Visible en el catálogo público</label>
                     </div>
 
-                    <div style={{ gridColumn: 'span 2', display: 'flex', alignItems: 'center', gap: '20px', padding: '15px 0', borderTop: '1px solid var(--card-border)', marginTop: '10px' }}>
-                        <input type="checkbox" name="activo" checked={formData.activo} onChange={handleChange} style={{ width: '22px', height: '22px', cursor: 'pointer', accentColor: 'var(--primary)' }} />
-                        <label style={{ fontSize: '16px', fontWeight: 700, cursor: 'pointer', color: 'var(--text-main)' }}>Sincronizar con Catálogo Público</label>
-                    </div>
-
-                    <div style={{ gridColumn: 'span 2', display: 'flex', justifyContent: 'flex-end', gap: '20px' }}>
-                        <button type="button" onClick={onClose} style={{ padding: '15px 35px', background: 'rgba(255,255,255,0.05)', color: 'var(--text-main)', border: '1px solid var(--card-border)', borderRadius: '15px', fontWeight: 700 }}>Cancelar</button>
-                        <button type="submit" style={{ padding: '15px 50px', background: 'var(--gradient-main)', color: 'white', fontWeight: 800, borderRadius: '15px', boxShadow: '0 8px 25px var(--primary-glow)', border: 'none', cursor: 'pointer' }}>Guardar Cambios</button>
+                    <div style={{ gridColumn: 'span 2', display: 'flex', justifyContent: 'flex-end', gap: '15px', marginTop: '10px' }}>
+                        <button type="button" onClick={onClose} style={{ padding: '15px 30px', background: 'rgba(255,255,255,0.05)', color: 'var(--text-main)', border: '1px solid var(--card-border)', borderRadius: '15px', fontWeight: 700, cursor: 'pointer' }}>Cancelar</button>
+                        <button
+                            type="submit"
+                            disabled={uploading}
+                            style={{
+                                padding: '15px 45px', background: 'var(--gradient-main)', color: 'white',
+                                fontWeight: 800, borderRadius: '15px', boxShadow: '0 8px 25px var(--primary-glow)',
+                                border: 'none', cursor: uploading ? 'not-allowed' : 'pointer', opacity: uploading ? 0.7 : 1
+                            }}
+                        >
+                            {uploading ? 'Guardando...' : 'Guardar Cambios'}
+                        </button>
                     </div>
                 </form>
             </div>

@@ -10,6 +10,10 @@ export default defineConfig({
         target: 'http://api:8000',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
+      },
+      '/uploads': {
+        target: 'http://api:8000',
+        changeOrigin: true
       }
     }
   }

@@ -31,10 +31,22 @@ const AdminOrders = () => {
     const [newStatus, setNewStatus] = useState('');
     const [error, setError] = useState(null);
 
+    // Filtros, Paginación y Ordenación
+    const [search, setSearch] = useState('');
+    const [filterStatus, setFilterStatus] = useState('');
+    const [page, setPage] = useState(0);
+    const [orderBy, setOrderBy] = useState('fecha');
+    const [orderDir, setOrderDir] = useState('desc');
+    const limit = 10;
+
     const fetchData = async () => {
         try {
             setLoading(true);
-            const response = await api.get('/pedidos/');
+            const offset = page * limit;
+            let url = `/pedidos/?limit=${limit}&skip=${offset}&search=${search}&order_by=${orderBy}&order_dir=${orderDir}`;
+            if (filterStatus !== '') url += `&estado=${filterStatus}`;
+
+            const response = await api.get(url);
             setOrders(response.data);
         } catch (err) {
             console.error('Error fetching all orders:', err);
@@ -45,7 +57,22 @@ const AdminOrders = () => {
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [page, search, filterStatus, orderBy, orderDir]);
+
+    const handleSort = (column) => {
+        if (orderBy === column) {
+            setOrderDir(orderDir === 'asc' ? 'desc' : 'asc');
+        } else {
+            setOrderBy(column);
+            setOrderDir('desc'); // Por defecto en desc cuando cambia
+        }
+        setPage(0);
+    };
+
+    const SortIndicator = ({ column }) => {
+        if (orderBy !== column) return <span style={{ opacity: 0.3, marginLeft: '5px' }}>↕</span>;
+        return <span style={{ marginLeft: '5px', color: 'var(--primary)' }}>{orderDir === 'asc' ? '↑' : '↓'}</span>;
+    };
 
     const handleUpdateStatus = async () => {
         setError(null);
@@ -69,17 +96,7 @@ const AdminOrders = () => {
         setExpandedId(prev => prev === id ? null : id);
     };
 
-    if (loading) return (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '100px' }}>
-            <div style={{
-                width: '40px', height: '40px',
-                border: '4px solid var(--primary)',
-                borderTopColor: 'transparent',
-                borderRadius: '50%',
-                animation: 'spin 0.8s linear infinite',
-            }}></div>
-        </div>
-    );
+    // Eliminado early return de loading para evitar pérdida de foco
 
     return (
         <div className="container animate-fade-in" style={{ padding: '60px 0' }}>
@@ -88,21 +105,70 @@ const AdminOrders = () => {
                 <p style={{ color: 'var(--text-muted)', fontSize: '18px' }}>Control de ventas y logística para 3D4EVERYONE.</p>
             </header>
 
+            {/* BARRA DE FILTROS */}
+            <div className="glass-panel" style={{ padding: '20px', marginBottom: '25px', display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'flex-end', border: '1px solid var(--card-border)' }}>
+                <div style={{ flex: 1, minWidth: '200px' }}>
+                    <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Buscar</label>
+                    <input
+                        type="text"
+                        placeholder="Nº de pedido, cliente o email..."
+                        value={search}
+                        onChange={(e) => { setSearch(e.target.value); setPage(0); }}
+                        style={{ width: '100%', padding: '12px', borderRadius: '10px', background: 'var(--background)', color: 'var(--text-main)', border: '1px solid var(--card-border)' }}
+                    />
+                </div>
+
+                <div style={{ width: '220px' }}>
+                    <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Estado</label>
+                    <select
+                        value={filterStatus}
+                        onChange={(e) => { setFilterStatus(e.target.value); setPage(0); }}
+                        style={{ width: '100%', padding: '12px', borderRadius: '10px', background: 'var(--background)', color: 'var(--text-main)', border: '1px solid var(--card-border)' }}
+                    >
+                        <option value="">Todos los estados</option>
+                        {STATUS_OPTIONS.map(opt => (
+                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                    </select>
+                </div>
+
+                <button
+                    onClick={() => { setSearch(''); setFilterStatus(''); setPage(0); setOrderBy('fecha'); setOrderDir('desc'); }}
+                    style={{ padding: '12px 20px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', color: 'var(--text-main)', border: '1px solid var(--card-border)', fontSize: '13px' }}
+                >
+                    Limpiar
+                </button>
+            </div>
+
             <div className="glass-panel" style={{ padding: '30px', border: '1px solid var(--card-border)', overflowX: 'auto' }}>
                 <table style={{ borderCollapse: 'separate', borderSpacing: '0 6px', marginTop: '0' }}>
                     <thead>
                         <tr>
                             <th style={{ background: 'none', width: '36px' }}></th>
-                            <th style={{ background: 'none' }}>Número</th>
-                            <th style={{ background: 'none' }}>Cliente</th>
-                            <th style={{ background: 'none' }}>Fecha</th>
-                            <th style={{ background: 'none' }}>Estado</th>
-                            <th style={{ background: 'none' }}>Total</th>
+                            <th onClick={() => handleSort('numero_pedido')} style={{ cursor: 'pointer', userSelect: 'none', background: 'none' }}>
+                                Número <SortIndicator column="numero_pedido" />
+                            </th>
+                            <th onClick={() => handleSort('cliente')} style={{ cursor: 'pointer', userSelect: 'none', background: 'none' }}>
+                                Cliente <SortIndicator column="cliente" />
+                            </th>
+                            <th onClick={() => handleSort('fecha')} style={{ cursor: 'pointer', userSelect: 'none', background: 'none' }}>
+                                Fecha <SortIndicator column="fecha" />
+                            </th>
+                            <th onClick={() => handleSort('estado')} style={{ cursor: 'pointer', userSelect: 'none', background: 'none' }}>
+                                Estado <SortIndicator column="estado" />
+                            </th>
+                            <th onClick={() => handleSort('total')} style={{ cursor: 'pointer', userSelect: 'none', background: 'none' }}>
+                                Total <SortIndicator column="total" />
+                            </th>
                             <th style={{ background: 'none' }}>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {orders.map(order => (
+                        {loading ? (
+                            <tr>
+                                <td colSpan="7" style={{ textAlign: 'center', padding: '60px', color: 'var(--text-muted)' }}>Cargando pedidos...</td>
+                            </tr>
+                        ) : orders.map(order => (
                             <React.Fragment key={order.id}>
                                 {/* FILA PRINCIPAL */}
                                 <tr style={{ transition: 'all 0.2s ease' }}>
@@ -182,11 +248,25 @@ const AdminOrders = () => {
                                                                 border: '1px solid rgba(255,255,255,0.06)',
                                                             }}>
                                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                                    <span style={{
-                                                                        background: 'var(--gradient-main)', borderRadius: '8px',
-                                                                        width: '28px', height: '28px', display: 'flex',
-                                                                        alignItems: 'center', justifyContent: 'center', fontSize: '14px',
-                                                                    }}>📦</span>
+                                                                    <div style={{
+                                                                        background: item.producto?.imagen_url ? 'none' : 'var(--gradient-main)',
+                                                                        borderRadius: '8px',
+                                                                        width: '28px',
+                                                                        height: '28px',
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        justifyContent: 'center',
+                                                                        fontSize: '14px',
+                                                                        overflow: 'hidden',
+                                                                        border: '1px solid rgba(255,255,255,0.05)',
+                                                                        flexShrink: 0
+                                                                    }}>
+                                                                        {item.producto?.imagen_url ? (
+                                                                            <img src={`${item.producto.imagen_url}`} alt={item.producto.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                                        ) : (
+                                                                            '📦'
+                                                                        )}
+                                                                    </div>
                                                                     <div>
                                                                         <div style={{ fontSize: '14px', fontWeight: 700 }}>
                                                                             {item.producto?.nombre || `Producto #${item.producto_id}`}
@@ -249,11 +329,38 @@ const AdminOrders = () => {
                     </tbody>
                 </table>
 
-                {orders.length === 0 && (
+                {(!loading && orders.length === 0) && (
                     <div style={{ textAlign: 'center', padding: '50px', color: 'var(--text-muted)' }}>
-                        No hay pedidos en el sistema todavía.
+                        No se encontraron pedidos con estos filtros.
                     </div>
                 )}
+
+                {/* PAGINACIÓN */}
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '30px' }}>
+                    <button
+                        disabled={page === 0}
+                        onClick={() => setPage(page - 1)}
+                        style={{
+                            padding: '10px 20px', borderRadius: '10px', background: 'var(--navbar-bg)',
+                            color: page === 0 ? 'var(--text-muted)' : 'var(--text-main)', border: '1px solid var(--card-border)',
+                            cursor: page === 0 ? 'default' : 'pointer'
+                        }}
+                    >
+                        Anterior
+                    </button>
+                    <span style={{ display: 'flex', alignItems: 'center', fontWeight: 600, padding: '0 15px' }}>Pág. {page + 1}</span>
+                    <button
+                        disabled={orders.length < limit}
+                        onClick={() => setPage(page + 1)}
+                        style={{
+                            padding: '10px 20px', borderRadius: '10px', background: 'var(--navbar-bg)',
+                            color: orders.length < limit ? 'var(--text-muted)' : 'var(--text-main)', border: '1px solid var(--card-border)',
+                            cursor: orders.length < limit ? 'default' : 'pointer'
+                        }}
+                    >
+                        Siguiente
+                    </button>
+                </div>
             </div>
 
             {/* MODAL ACTUALIZAR ESTADO */}

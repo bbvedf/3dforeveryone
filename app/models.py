@@ -37,6 +37,7 @@ class Producto(Base):
     tiempo_impresion_horas = Column(Float, nullable=True)
     stock = Column(Integer, default=0)
     activo = Column(Boolean, default=True)
+    imagen_url = Column(String(500), nullable=True)
     creado_en = Column(DateTime, default=datetime.utcnow)
     actualizado_en = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -60,6 +61,7 @@ class Cliente(Base):
     contraseña_hash = Column(String(255), nullable=False)
     rol = Column(Enum(RolUsuario), default=RolUsuario.CLIENTE, nullable=False)
     activo = Column(Boolean, default=True)
+    avatar_url = Column(String(500), nullable=True)
     creado_en = Column(DateTime, default=datetime.utcnow)
 
     # Relaciones

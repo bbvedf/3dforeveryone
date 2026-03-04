@@ -62,8 +62,23 @@ const CartDrawer = () => {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                             {cartItems.map(item => (
                                 <div key={item.id} style={{ display: 'flex', gap: '15px', padding: '15px', borderRadius: '15px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--card-border)' }}>
-                                    <div style={{ width: '80px', height: '80px', borderRadius: '10px', background: 'var(--gradient-main)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>
-                                        📦
+                                    <div style={{
+                                        width: '80px',
+                                        height: '80px',
+                                        borderRadius: '10px',
+                                        background: item.imagen_url ? 'none' : 'var(--gradient-main)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontSize: '24px',
+                                        overflow: 'hidden',
+                                        border: '1px solid rgba(255,255,255,0.05)'
+                                    }}>
+                                        {item.imagen_url ? (
+                                            <img src={`${item.imagen_url}`} alt={item.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        ) : (
+                                            '📦'
+                                        )}
                                     </div>
                                     <div style={{ flex: 1 }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>

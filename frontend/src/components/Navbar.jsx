@@ -182,8 +182,27 @@ const Navbar = () => {
 
                     {user ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                            <Link to="/perfil" onClick={toggleMenu} className="drawer-item">
-                                <ProfileIcon /> {user.nombre}
+                            <Link to="/perfil" onClick={toggleMenu} className="drawer-item" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{
+                                    width: '32px',
+                                    height: '32px',
+                                    borderRadius: '50%',
+                                    overflow: 'hidden',
+                                    background: 'var(--gradient-main)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '14px',
+                                    fontWeight: 800,
+                                    color: 'white'
+                                }}>
+                                    {user.avatar_url ? (
+                                        <img src={`${user.avatar_url}`} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    ) : (
+                                        user.nombre[0].toUpperCase()
+                                    )}
+                                </div>
+                                {user.nombre}
                             </Link>
                             <button
                                 onClick={handleLogout}

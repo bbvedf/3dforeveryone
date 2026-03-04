@@ -194,6 +194,7 @@ const AdminProducts = () => {
                         <table style={{ minWidth: '800px' }}>
                             <thead>
                                 <tr>
+                                    <th style={{ width: '60px' }}>Foto</th>
                                     <th onClick={() => handleSort('nombre')} style={{ cursor: 'pointer', userSelect: 'none' }}>
                                         Producto <SortIndicator column="nombre" />
                                     </th>
@@ -216,10 +217,30 @@ const AdminProducts = () => {
                             <tbody>
                                 {products.length === 0 ? (
                                     <tr>
-                                        <td colSpan="7" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>No se encontraron productos con estos filtros.</td>
+                                        <td colSpan="8" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>No se encontraron productos con estos filtros.</td>
                                     </tr>
                                 ) : products.map(p => (
                                     <tr key={p.id}>
+                                        <td>
+                                            <div style={{
+                                                width: '40px',
+                                                height: '40px',
+                                                borderRadius: '8px',
+                                                background: 'var(--gradient-main)',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                fontSize: '18px',
+                                                overflow: 'hidden',
+                                                border: '1px solid rgba(255,255,255,0.05)'
+                                            }}>
+                                                {p.imagen_url ? (
+                                                    <img src={`${p.imagen_url}`} alt={p.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                ) : (
+                                                    '📦'
+                                                )}
+                                            </div>
+                                        </td>
                                         <td>
                                             <div style={{ fontWeight: 700, fontSize: '16px' }}>{p.nombre}</div>
                                             <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>ID: #{p.id}</div>

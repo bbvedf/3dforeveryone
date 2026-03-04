@@ -88,22 +88,82 @@ const Profile = () => {
                 background: 'var(--navbar-bg)'
             }}>
                 <header style={{ marginBottom: '50px', textAlign: 'center' }}>
-                    <div style={{
-                        width: '90px',
-                        height: '90px',
-                        borderRadius: '50%',
-                        background: 'var(--gradient-main)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '36px',
-                        margin: '0 auto 20px',
-                        fontWeight: 900,
-                        color: 'white',
-                        boxShadow: '0 10px 30px var(--primary-glow)',
-                        textTransform: 'uppercase'
-                    }}>
-                        {user?.nombre?.[0] || 'U'}
+                    <div style={{ position: 'relative', width: '120px', height: '120px', margin: '0 auto 25px' }}>
+                        <div
+                            onClick={() => document.getElementById('avatar-input').click()}
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                borderRadius: '50%',
+                                background: 'var(--gradient-main)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '48px',
+                                fontWeight: 900,
+                                color: 'white',
+                                boxShadow: '0 15px 40px var(--primary-glow)',
+                                textTransform: 'uppercase',
+                                cursor: 'pointer',
+                                overflow: 'hidden',
+                                border: '4px solid rgba(255,255,255,0.1)',
+                                transition: 'all 0.3s ease'
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+                            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                        >
+                            {user?.avatar_url ? (
+                                <img
+                                    src={`${user.avatar_url}`}
+                                    alt="Avatar"
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                />
+                            ) : (
+                                user?.nombre?.[0] || 'U'
+                            )}
+
+                            <div style={{
+                                position: 'absolute',
+                                bottom: 0,
+                                left: 0,
+                                width: '100%',
+                                height: '35%',
+                                background: 'rgba(0,0,0,0.6)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '12px',
+                                color: 'white',
+                                fontWeight: 700,
+                                backdropFilter: 'blur(5px)'
+                            }}>
+                                EDITAR
+                            </div>
+                        </div>
+                        <input
+                            id="avatar-input"
+                            type="file"
+                            accept="image/*"
+                            style={{ display: 'none' }}
+                            onChange={async (e) => {
+                                const file = e.target.files[0];
+                                if (!file) return;
+                                try {
+                                    setLoading(true);
+                                    const formDataFile = new FormData();
+                                    formDataFile.append('file', file);
+                                    const res = await api.post('/uploads/avatar', formDataFile, {
+                                        headers: { 'Content-Type': 'multipart/form-data' }
+                                    });
+                                    updateUser({ avatar_url: res.data.avatar_url });
+                                    setMessage({ type: 'success', text: '¡Avatar actualizado!' });
+                                } catch (err) {
+                                    setMessage({ type: 'error', text: 'Error al subir el avatar.' });
+                                } finally {
+                                    setLoading(false);
+                                }
+                            }}
+                        />
                     </div>
                     <h1 style={{ fontSize: '38px', fontWeight: 900, marginBottom: '10px', color: 'var(--text-main)' }}>Mi Cuenta</h1>
                     <p style={{ color: 'var(--text-muted)', fontSize: '18px' }}>Gestiona tus credenciales y preferencias de envío.</p>

@@ -2,6 +2,7 @@ from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from app.database import get_db
 from app.models import Pedido, ItemPedido, Producto, Cliente, EstadoPedido, RolUsuario
@@ -22,19 +23,44 @@ def generar_numero_pedido(db: Session) -> str:
 @router.get("/", response_model=list[PedidoResponse])
 def listar_pedidos(
     skip: int = 0,
-    limit: int = 20,
+    limit: int = 100,
     estado: str = None,
+    search: str = None,
+    order_by: str = "creado_en",
+    order_dir: str = "desc",
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
     """Listar pedidos. Admin ve todos; cliente solo los suyos."""
-    query = db.query(Pedido)
+    query = db.query(Pedido).outerjoin(Cliente)
 
     if current_user.rol != RolUsuario.ADMIN:
         query = query.filter(Pedido.cliente_id == current_user.id)
 
     if estado:
         query = query.filter(Pedido.estado == estado)
+
+    if search:
+        termino = func.unaccent(f"%{search}%")
+        query = query.filter(
+            (func.unaccent(Pedido.numero_pedido).ilike(termino)) |
+            (func.unaccent(Cliente.nombre).ilike(termino)) |
+            (func.unaccent(Cliente.apellido).ilike(termino)) |
+            (func.concat(func.unaccent(Cliente.nombre), ' ', func.unaccent(Cliente.apellido)).ilike(termino)) |
+            (func.unaccent(Cliente.email).ilike(termino))
+        )
+
+    if order_by == "cliente":
+        columna = Cliente.nombre
+    elif order_by == "fecha":
+        columna = Pedido.creado_en
+    else:
+        columna = getattr(Pedido, order_by, Pedido.creado_en)
+
+    if order_dir == "desc":
+        query = query.order_by(columna.desc())
+    else:
+        query = query.order_by(columna.asc())
 
     return query.offset(skip).limit(limit).all()
 

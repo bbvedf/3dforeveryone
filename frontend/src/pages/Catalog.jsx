@@ -136,13 +136,23 @@ const Catalog = () => {
                                 width: '100%',
                                 height: '200px',
                                 borderRadius: '12px',
-                                background: 'linear-gradient(45deg, #1e293b, #0f172a)',
+                                background: product.imagen_url ? 'none' : 'linear-gradient(45deg, #1e293b, #0f172a)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                fontSize: '40px'
+                                fontSize: '40px',
+                                overflow: 'hidden',
+                                border: '1px solid rgba(255,255,255,0.05)'
                             }}>
-                                📦
+                                {product.imagen_url ? (
+                                    <img
+                                        src={`${product.imagen_url}`}
+                                        alt={product.nombre}
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                    />
+                                ) : (
+                                    '📦'
+                                )}
                             </div>
 
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>

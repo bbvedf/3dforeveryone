@@ -143,11 +143,25 @@ const Orders = () => {
                                                 border: '1px solid rgba(255,255,255,0.06)',
                                             }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                    <span style={{
-                                                        background: 'var(--gradient-main)', borderRadius: '8px',
-                                                        width: '28px', height: '28px', display: 'flex', alignItems: 'center',
-                                                        justifyContent: 'center', fontSize: '14px', flexShrink: 0,
-                                                    }}>📦</span>
+                                                    <div style={{
+                                                        background: item.producto?.imagen_url ? 'none' : 'var(--gradient-main)',
+                                                        borderRadius: '8px',
+                                                        width: '28px',
+                                                        height: '28px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        fontSize: '14px',
+                                                        flexShrink: 0,
+                                                        overflow: 'hidden',
+                                                        border: '1px solid rgba(255,255,255,0.05)'
+                                                    }}>
+                                                        {item.producto?.imagen_url ? (
+                                                            <img src={`${item.producto.imagen_url}`} alt={item.producto.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                        ) : (
+                                                            '📦'
+                                                        )}
+                                                    </div>
                                                     <div>
                                                         <div style={{ fontSize: '14px', fontWeight: 700 }}>
                                                             {item.producto?.nombre || `Producto #${item.producto_id}`}
