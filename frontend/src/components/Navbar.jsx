@@ -2,14 +2,49 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { useCart } from '../context/CartContext';
 
 // Logos
 import logoDark from '../assets/logo_dark.png';
 import logoLight from '../assets/logo_light.png';
 
+// --- ICONOS SVG (Cambiados fuera para HMR estable) ---
+const SunIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" /></svg>
+);
+
+const MoonIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
+);
+
+const HomeIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
+);
+
+const CategoryIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" /></svg>
+);
+
+const AdminIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>
+);
+
+const ProfileIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+);
+
+const OrdersIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><path d="M3 6h18" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
+);
+
+const CartIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" /><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" /></svg>
+);
+
 const Navbar = () => {
     const { user, logout, isAdmin } = useAuth();
     const { isDark, toggleTheme } = useTheme();
+    const { totalItems, toggleCart } = useCart();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const navigate = useNavigate();
 
@@ -20,31 +55,6 @@ const Navbar = () => {
     };
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-
-    // --- ICONOS SVG ---
-    const SunIcon = () => (
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" /></svg>
-    );
-
-    const MoonIcon = () => (
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
-    );
-
-    const HomeIcon = () => (
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
-    );
-
-    const CategoryIcon = () => (
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" /></svg>
-    );
-
-    const AdminIcon = () => (
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>
-    );
-
-    const ProfileIcon = () => (
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
-    );
 
     return (
         <>
@@ -73,19 +83,48 @@ const Navbar = () => {
                     />
                 </Link>
 
-                {/* BOTÓN HAMBURGUESA */}
-                <button
-                    onClick={toggleMenu}
-                    style={{
-                        background: 'var(--gradient-main)', width: '50px', height: '50px',
-                        display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'center', justifyContent: 'center',
-                        boxShadow: '0 4px 15px var(--primary-glow)', border: 'none', borderRadius: '15px'
-                    }}
-                >
-                    <div style={{ width: '24px', height: '2.5px', background: 'white', borderRadius: '2px', transform: isMenuOpen ? 'rotate(45deg) translate(6px, 6px)' : 'none', transition: '0.3s' }}></div>
-                    {!isMenuOpen && <div style={{ width: '24px', height: '2.5px', background: 'white', borderRadius: '2px' }}></div>}
-                    <div style={{ width: '24px', height: '2.5px', background: 'white', borderRadius: '2px', transform: isMenuOpen ? 'rotate(-45deg) translate(6px, -6px)' : 'none', transition: '0.3s' }}></div>
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                    {/* CARRITO */}
+                    <button
+                        onClick={toggleCart}
+                        style={{
+                            background: 'rgba(255,255,255,0.05)', border: '1px solid var(--card-border)',
+                            width: '50px', height: '50px', borderRadius: '15px', color: 'var(--text-main)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative',
+                            cursor: 'pointer', transition: 'all 0.3s ease'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--primary)'}
+                        onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--card-border)'}
+                    >
+                        <CartIcon />
+                        {totalItems > 0 && (
+                            <span style={{
+                                position: 'absolute', top: '-5px', right: '-5px',
+                                background: 'var(--primary)', color: 'white', fontSize: '11px',
+                                fontWeight: 900, width: '20px', height: '20px', borderRadius: '50%',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                boxShadow: '0 4px 10px var(--primary-glow)', border: '2px solid var(--background)'
+                            }}>
+                                {totalItems}
+                            </span>
+                        )}
+                    </button>
+
+                    {/* BOTÓN HAMBURGUESA */}
+                    <button
+                        onClick={toggleMenu}
+                        style={{
+                            background: 'var(--gradient-main)', width: '50px', height: '50px',
+                            display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'center', justifyContent: 'center',
+                            boxShadow: '0 4px 15px var(--primary-glow)', border: 'none', borderRadius: '15px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        <div style={{ width: '24px', height: '2.5px', background: 'white', borderRadius: '2px', transform: isMenuOpen ? 'rotate(45deg) translate(6px, 6px)' : 'none', transition: '0.3s' }}></div>
+                        {!isMenuOpen && <div style={{ width: '24px', height: '2.5px', background: 'white', borderRadius: '2px' }}></div>}
+                        <div style={{ width: '24px', height: '2.5px', background: 'white', borderRadius: '2px', transform: isMenuOpen ? 'rotate(-45deg) translate(6px, -6px)' : 'none', transition: '0.3s' }}></div>
+                    </button>
+                </div>
             </nav>
 
             {/* DRAWER 🍔 (Responde dinámicamente al fondo del tema) */}
@@ -108,6 +147,12 @@ const Navbar = () => {
                     <HomeIcon /> Catálogo
                 </Link>
 
+                {user && (
+                    <Link to="/mis-pedidos" onClick={toggleMenu} className="drawer-item">
+                        <OrdersIcon /> Mis Pedidos
+                    </Link>
+                )}
+
                 {isAdmin && (
                     <>
                         <h3 style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '2px', marginTop: '20px', marginBottom: '10px' }}>Administración</h3>
@@ -116,6 +161,12 @@ const Navbar = () => {
                         </Link>
                         <Link to="/admin/categorias" onClick={toggleMenu} className="drawer-item" style={{ color: 'var(--accent) !important' }}>
                             <CategoryIcon /> Categorías
+                        </Link>
+                        <Link to="/admin/pedidos" onClick={toggleMenu} className="drawer-item" style={{ color: 'var(--accent) !important' }}>
+                            <OrdersIcon /> Pedidos
+                        </Link>
+                        <Link to="/admin/clientes" onClick={toggleMenu} className="drawer-item" style={{ color: 'var(--accent) !important' }}>
+                            <ProfileIcon /> Clientes
                         </Link>
                     </>
                 )}

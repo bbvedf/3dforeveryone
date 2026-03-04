@@ -10,6 +10,13 @@ export const ThemeProvider = ({ children }) => {
         return window.matchMedia('(prefers-color-scheme: dark)').matches;
     });
 
+    const updateFavicon = (href) => {
+        const link = document.getElementById('dynamic-favicon');
+        if (link) {
+            link.href = href;
+        }
+    };
+
     useEffect(() => {
         // Aplicar clase al body para el CSS
         if (isDark) {
@@ -24,13 +31,6 @@ export const ThemeProvider = ({ children }) => {
             updateFavicon('/favicon_light.png');
         }
     }, [isDark]);
-
-    const updateFavicon = (href) => {
-        const link = document.getElementById('dynamic-favicon');
-        if (link) {
-            link.href = href;
-        }
-    };
 
     const toggleTheme = () => setIsDark(!isDark);
 

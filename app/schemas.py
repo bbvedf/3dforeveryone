@@ -120,6 +120,18 @@ class Cliente(ClienteBase):
 
 
 # ── Items de pedido ────────────────────────────────────────────────────────────
+
+class ProductoResumen(BaseModel):
+    """Mini-schema del producto para incluir en líneas de pedido"""
+    id: int
+    nombre: str
+    material: Optional[str] = None
+    precio: float
+
+    class Config:
+        from_attributes = True
+
+
 class ItemPedidoBase(BaseModel):
     producto_id: int
     cantidad: int
@@ -134,6 +146,7 @@ class ItemPedidoCreate(BaseModel):
 
 class ItemPedido(ItemPedidoBase):
     id: int
+    producto: Optional[ProductoResumen] = None
 
     class Config:
         from_attributes = True
@@ -157,6 +170,7 @@ class PedidoUpdate(BaseModel):
 class PedidoResponse(BaseModel):
     id: int
     cliente_id: int
+    cliente: Optional[Cliente] = None
     numero_pedido: str
     estado: str
     total: float

@@ -91,18 +91,36 @@ def actualizar_cliente(
 # ── Solo admin ─────────────────────────────────────────────────────────────────
 
 @router.get("/", response_model=list[ClienteSchema], dependencies=[Depends(require_admin)])
-def listar_clientes(skip: int = 0, limit: int = 50, db: Session = Depends(get_db)):
-    """Listar todos los clientes (solo admin)"""
-    return db.query(Cliente).filter(Cliente.activo == True).offset(skip).limit(limit).all()
+def listar_clientes(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    """Listar todos los clientes activos e inactivos (solo admin)"""
+    return db.query(Cliente).offset(skip).limit(limit).all()
 
 
 @router.delete("/{cliente_id}", dependencies=[Depends(require_admin)])
-def eliminar_cliente(cliente_id: int, db: Session = Depends(get_db)):
-    """Desactivar un cliente (solo admin)"""
+def desactivar_cliente(cliente_id: int, db: Session = Depends(get_db)):
+    """Desactivar un cliente (solo admin) - soft delete"""
     db_cliente = db.query(Cliente).filter(Cliente.id == cliente_id).first()
     if not db_cliente:
         raise HTTPException(status_code=404, detail="Cliente no encontrado")
+    if db_cliente.rol == RolUsuario.ADMIN:
+        raise HTTPException(status_code=403, detail="No se puede desactivar a un administrador")
 
     db_cliente.activo = False
     db.commit()
     return {"mensaje": "Cliente desactivado exitosamente"}
+
+
+@router.delete("/{cliente_id}/eliminar", dependencies=[Depends(require_admin)])
+def eliminar_cliente_definitivo(cliente_id: int, db: Session = Depends(get_db)):
+    """Eliminar permanentemente un cliente de la BD (solo admin, solo si ya inactivo)"""
+    db_cliente = db.query(Cliente).filter(Cliente.id == cliente_id).first()
+    if not db_cliente:
+        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+    if db_cliente.rol == RolUsuario.ADMIN:
+        raise HTTPException(status_code=403, detail="No se puede eliminar a un administrador")
+    if db_cliente.activo:
+        raise HTTPException(status_code=400, detail="Desactiva primero al cliente antes de eliminarlo")
+
+    db.delete(db_cliente)
+    db.commit()
+    return {"mensaje": "Cliente eliminado permanentemente"}

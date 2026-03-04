@@ -4,12 +4,33 @@ Aplicación profesional y moderna para gestionar una tienda online de productos 
 
 ## 🚀 Características Actuales
 
-- **🔐 Seguridad Avanzada**: Autenticación basada en JWT (JSON Web Tokens) con sistema de roles (Admin y Cliente).
-- **🎨 Frontend Premium**: Interfaz moderna con estética *Dark Mode* y *Glassmorphism* construida con React 19 y Vite.
-- **🔌 API Robusta**: Backend con FastAPI, validación de datos Pydantic v2 y ORM SQLAlchemy 2.0.
-- **🗂️ Gestión de Catálogo Pro**: CRUD avanzado de productos y categorías con búsqueda en tiempo real, filtros tipo Excel, paginación y ordenación dinámica.
-- **👤 Perfiles y Seguridad**: Gestión completa de identidad de usuario, registro con validación técnica y cambio seguro de contraseña (hashing en servidor).
-- **🛡️ Integridad de Datos**: Sistema de borrado inteligente (soft/hard delete) con validación de dependencias entre productos y categorías.
+### 🛍️ Tienda y Experiencia de Compra
+- **🛒 Carrito Persistente**: CartDrawer lateral con ajuste de cantidades, eliminación de ítems y total dinámico. Se abre automáticamente al añadir un producto. Persiste en `localStorage`.
+- **💳 Checkout Completo**: Formulario de envío pre-rellenado con datos del perfil, resumen de pedido y confirmación con modal centrado (React Portal).
+- **📦 Historial de Pedidos**: Vista detallada de todos los pedidos del usuario con líneas de producto (nombre, material, cantidad × precio unitario), subtotales, dirección de envío y estado visual con badge y color.
+
+### 🔐 Autenticación y Usuarios
+- **JWT con roles**: Sistema de autenticación basado en tokens con roles `admin` y `cliente`.
+- **Registro con validación**: Formulario completo con checkers en tiempo real (contraseñas coincidentes, email, campos requeridos). Modal de confirmación al registrarse.
+- **Perfil editable**: Actualización de datos personales y cambio seguro de contraseña (hashing servidor).
+
+### 🗂️ Catálogo y Navegación
+- **Motor de búsqueda**: Filtrado en tiempo real por nombre y categoría.
+- **Categorías navegables**: Vista pública de categorías activas.
+- **Navbar adaptativa**: Links dinámicos según rol (cliente/admin), icono de carrito con contador de ítems, menú lateral hamburguesa.
+- **Modo Claro/Oscuro**: Toggle persistente con transición suave y favicon dinámico.
+
+### 🛠️ Panel de Administración
+- **📋 Inventario (Productos)**: CRUD avanzado con filtros Excel-style, búsqueda en tiempo real, paginación, ordenación dinámica y modal de edición.
+- **🏷️ Categorías**: CRUD completo con soft/hard delete (desactivar → eliminar) y validación de dependencias con productos.
+- **🛒 Gestión de Pedidos**: Tabla global con filas **acordeón expandibles** (click para ver líneas detalladas del pedido, dirección y notas). Cambio de estado con selector visual (Pendiente → Confirmado → Procesando → Enviado → Entregado → Cancelado).
+- **👥 Directorio de Clientes**: Dos etapas de baja — **Desactivar** (soft delete, conserva pedidos) → el cliente aparece como *Inactivo* → **Eliminar definitivamente** (hard delete de BD). Protegido: no se puede afectar a admins.
+
+### 🏗️ Infraestructura y Calidad
+- **🔌 API Robusta**: FastAPI con validación Pydantic v2, ORM SQLAlchemy 2.0, respuestas enriquecidas (items de pedido incluyen datos del producto y cliente).
+- **🎨 Frontend Premium**: React 19 + Vite, glassmorphism, micro-animaciones, dark mode. Modales con React Portals para centrado perfecto.
+- **🛡️ Rutas Protegidas**: `ProtectedRoute` con soporte `adminOnly` para bloquear acceso según rol.
+- **📐 Esquemas enlazados**: `ItemPedido` devuelve el objeto `Producto` anidado, `PedidoResponse` devuelve el `Cliente` anidado.
 
 ---
 
@@ -17,38 +38,54 @@ Aplicación profesional y moderna para gestionar una tienda online de productos 
 
 ```text
 3dforeveryone/
-├── app/                # Backend API (FastAPI)
-│   ├── routes/         # Endpoints (Categorías, Productos, Clientes, Auth)
-│   ├── models.py       # Modelos de Base de Datos (SQLAlchemy 2.0)
-│   ├── schemas.py      # Validaciones y esquemas (Pydantic v2)
-│   ├── security.py     # Lógica de JWT, Hashing y Roles
-│   └── database.py     # Configuración de conexión PostgreSQL
-├── frontend/           # Frontend (React 19 + Vite)
+├── app/                    # Backend API (FastAPI)
+│   ├── routes/
+│   │   ├── auth.py         # Login / JWT
+│   │   ├── clientes.py     # CRUD clientes + soft/hard delete
+│   │   ├── productos.py    # CRUD productos
+│   │   ├── categorias.py   # CRUD categorías
+│   │   └── pedidos.py      # Pedidos: crear, listar, cancelar, actualizar estado
+│   ├── models.py           # Modelos SQLAlchemy (Pedido, ItemPedido, Cliente, …)
+│   ├── schemas.py          # Schemas Pydantic v2 con relaciones anidadas
+│   ├── security.py         # JWT, hashing, guards de rol
+│   └── database.py         # Conexión PostgreSQL
+├── frontend/               # Frontend (React 19 + Vite)
 │   ├── src/
-│   │   ├── api/        # Cliente Axios centralizado con Interceptores
-│   │   ├── components/ # Modales Premium, Navbar, ProtectedRoutes
-│   │   └── pages/      # Catálogo, Admin, Auth, Perfil
-│   └── Dockerfile      # Docker para React (Node 22)
-├── database/           # Scripts de inicialización
-├── .env                # Variables de entorno (NO subido a Git)
-└── docker-compose.yml  # Orquestador de la infraestructura
+│   │   ├── api/            # Cliente Axios con interceptores JWT + 401
+│   │   ├── context/        # AuthContext, CartContext, ThemeContext
+│   │   ├── components/     # Navbar, CartDrawer, ConfirmModal (Portal), ProtectedRoute
+│   │   └── pages/
+│   │       ├── Catalog.jsx
+│   │       ├── Checkout.jsx
+│   │       ├── Orders.jsx
+│   │       ├── Profile.jsx
+│   │       ├── Login.jsx / Register.jsx
+│   │       └── admin/
+│   │           ├── AdminProducts.jsx
+│   │           ├── AdminCategories.jsx
+│   │           ├── AdminOrders.jsx   # Acordeón + cambio estado
+│   │           └── AdminClients.jsx  # Soft/Hard delete
+│   └── Dockerfile
+├── database/               # Scripts de inicialización y seed
+├── .env                    # Variables de entorno (NO subido a Git)
+└── docker-compose.yml
 ```
 
 ---
 
 ## 🛠️ Instalación y Arranque Rápido
 
-### 1. Preparar Entorno
+### 1. Preparar entorno
 ```bash
 cp .env.example .env
 ```
 
-### 2. Levantar el Stack Completo
+### 2. Levantar el stack completo
 ```bash
 docker-compose up -d --build
 ```
 
-### 3. Semilla de Datos (Opcional)
+### 3. Semilla de datos (Opcional)
 ```bash
 docker-compose exec api python -m database.init_db
 ```
@@ -57,11 +94,11 @@ docker-compose exec api python -m database.init_db
 
 ## 🔑 Credenciales de Prueba
 
-### Perfil Administrador
+### Administrador
 - **Email:** `admin@3dforeveryone.com`
-- **Password:** `Admin3D2024!` (Acceso a Panel de Control)
+- **Password:** `Admin3D2024!`
 
-### Perfil Cliente
+### Cliente
 - **Email:** `juan@example.com`
 - **Password:** `password123`
 
@@ -71,20 +108,27 @@ docker-compose exec api python -m database.init_db
 
 | Servicio | URL |
 | :--- | :--- |
-| **🚀 Tienda (Frontend)** | [http://localhost:5173](http://localhost:5173) |
-| **💠 Gestión Inventario** | [http://localhost:5173/admin](http://localhost:5173/admin) |
-| **📚 Docs Swagger** | [http://localhost:8000/docs](http://localhost:8000/docs) |
+| **🚀 Tienda** | [http://localhost:5173](http://localhost:5173) |
+| **🛒 Mis Pedidos** | [http://localhost:5173/mis-pedidos](http://localhost:5173/mis-pedidos) |
+| **⚙️ Admin — Inventario** | [http://localhost:5173/admin](http://localhost:5173/admin) |
+| **🛠️ Admin — Pedidos** | [http://localhost:5173/admin/pedidos](http://localhost:5173/admin/pedidos) |
+| **👥 Admin — Clientes** | [http://localhost:5173/admin/clientes](http://localhost:5173/admin/clientes) |
+| **📚 Swagger API Docs** | [http://localhost:8000/docs](http://localhost:8000/docs) |
 
 ---
 
 ## 📊 Roadmap y Estado del Proyecto
 
-- [x] **Módulo de Administración**: Gestión avanzada de inventario y categorías (Completado ✅)
-- [x] **Filtros y Búsqueda**: Motor de búsqueda dinámico y filtros Excel-style (Completado ✅)
-- [x] **Registro y Perfil**: Flujo completo de registro y gestión de identidad (Completado ✅)
-- [ ] **Gestión de Imágenes**: Sistema de carga y visualización de archivos para modelos 3D.
-- [ ] **Carrito de Compra**: Gestión de items y persistencia.
-- [ ] **Pasarela de Pagos**: Integración real con Stripe.
+- [x] **Catálogo y Categorías**: CRUD completo con filtros y búsqueda (✅)
+- [x] **Autenticación JWT y Roles**: Login, registro, perfil editable (✅)
+- [x] **Carrito de Compra**: Drawer lateral persistente, ajuste de cantidades (✅)
+- [x] **Checkout y Pedidos**: Formulario de envío, confirmación, historial detallado (✅)
+- [x] **Panel Admin — Pedidos**: Acordeón con detalle, cambio de estado logístico (✅)
+- [x] **Panel Admin — Clientes**: Directorio completo con soft/hard delete (✅)
+- [ ] **Imágenes de Productos**: Subida y visualización de fotos de piezas 3D
+- [ ] **Pasarela de Pagos**: Integración con Stripe
+- [ ] **Notificaciones**: Emails transaccionales (confirmación de pedido, envío)
+- [ ] **Seguimiento**: Tracking público de pedido por número
 
 ---
 

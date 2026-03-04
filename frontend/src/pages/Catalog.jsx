@@ -1,11 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import api from '../api/api';
 
 const Catalog = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [categories, setCategories] = useState([]);
+    const { addToCart } = useCart();
+    const [addedId, setAddedId] = useState(null);
+
+    const handleAddToCart = (product) => {
+        addToCart(product);
+        setAddedId(product.id);
+        setTimeout(() => setAddedId(null), 1500);
+    };
 
     // Filtros
     const location = useLocation();
@@ -167,19 +176,27 @@ const Catalog = () => {
                                 {product.descripcion}
                             </p>
 
-                            <button style={{
-                                width: '100%',
-                                padding: '12px',
-                                marginTop: '10px',
-                                background: 'var(--gradient-main)',
-                                color: 'white',
-                                fontWeight: 800,
-                                fontSize: '14px',
-                                border: 'none',
-                                borderRadius: '10px'
-                            }}>
-                                Ver Detalles
-                            </button>
+                            <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                                <button style={{ flex: 1, padding: '12px', background: 'rgba(255,255,255,0.05)', color: 'var(--text-main)', border: '1px solid var(--card-border)', fontWeight: 700, borderRadius: '10px' }}>Detalles</button>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleAddToCart(product);
+                                    }}
+                                    style={{
+                                        flex: 2,
+                                        padding: '12px',
+                                        background: addedId === product.id ? '#00ff64' : 'var(--gradient-main)',
+                                        color: 'white',
+                                        fontWeight: 800,
+                                        borderRadius: '10px',
+                                        border: 'none',
+                                        transition: 'all 0.3s ease'
+                                    }}
+                                >
+                                    {addedId === product.id ? '¡Añadido! ✅' : '🛒 Añadir'}
+                                </button>
+                            </div>
                         </div>
                     ))}
                 </div>
