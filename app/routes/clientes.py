@@ -40,6 +40,12 @@ def registrar_cliente(cliente: ClienteCreate, db: Session = Depends(get_db)):
 
 # ── Login requerido ────────────────────────────────────────────────────────────
 
+@router.get("/me", response_model=ClienteSchema)
+def obtener_perfil_actual(current_user: Cliente = Depends(get_current_user)):
+    """Obtener el perfil del usuario logueado actualmente"""
+    return current_user
+
+
 @router.get("/{cliente_id}", response_model=ClienteSchema)
 def obtener_cliente(
     cliente_id: int,
@@ -72,7 +78,10 @@ def actualizar_cliente(
         raise HTTPException(status_code=404, detail="Cliente no encontrado")
 
     for campo, valor in cliente.model_dump(exclude_unset=True).items():
-        setattr(db_cliente, campo, valor)
+        if campo == "contraseña" and valor:
+            db_cliente.contraseña_hash = hash_password(valor)
+        else:
+            setattr(db_cliente, campo, valor)
 
     db.commit()
     db.refresh(db_cliente)

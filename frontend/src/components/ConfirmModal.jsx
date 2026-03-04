@@ -1,7 +1,19 @@
 import React from 'react';
 
-const ConfirmModal = ({ isOpen, title, message, onConfirm, onCancel, hideCancel = false }) => {
+const ConfirmModal = ({ isOpen, title, message, onConfirm, onCancel, hideCancel = false, type = 'warning' }) => {
     if (!isOpen) return null;
+
+    const getIcon = () => {
+        if (type === 'success') return '✅';
+        if (type === 'error') return '❌';
+        return '⚠️';
+    };
+
+    const getButtonColor = () => {
+        if (type === 'success') return 'var(--primary)';
+        if (type === 'error' || type === 'warning') return '#ff3232';
+        return 'var(--primary)';
+    };
 
     return (
         <div style={{
@@ -15,7 +27,7 @@ const ConfirmModal = ({ isOpen, title, message, onConfirm, onCancel, hideCancel 
                 border: '1px solid var(--card-border)', textAlign: 'center',
                 background: 'var(--navbar-bg)', boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
             }}>
-                <div style={{ fontSize: '48px', marginBottom: '20px' }}>{hideCancel ? '❌' : '⚠️'}</div>
+                <div style={{ fontSize: '48px', marginBottom: '20px' }}>{getIcon()}</div>
                 <h3 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '15px' }}>{title}</h3>
                 <p style={{ color: 'var(--text-muted)', marginBottom: '35px', fontSize: '16px', lineHeight: '1.6' }}>{message}</p>
 
@@ -34,12 +46,12 @@ const ConfirmModal = ({ isOpen, title, message, onConfirm, onCancel, hideCancel 
                     <button
                         onClick={onConfirm}
                         style={{
-                            flex: 1, padding: '14px', borderRadius: '12px', background: hideCancel ? 'var(--primary)' : '#ff3232',
+                            flex: 1, padding: '14px', borderRadius: '12px', background: getButtonColor(),
                             color: 'white', border: 'none', fontWeight: 800, fontSize: '15px',
-                            boxShadow: hideCancel ? '0 8px 20px var(--primary-glow)' : '0 8px 20px rgba(255,50,50,0.3)'
+                            boxShadow: `0 8px 20px ${type === 'success' ? 'var(--primary-glow)' : 'rgba(255,50,50,0.3)'}`
                         }}
                     >
-                        {hideCancel ? 'Entendido' : 'Confirmar'}
+                        {hideCancel ? (type === 'success' ? 'Ir al Login' : 'Entendido') : 'Confirmar'}
                     </button>
                 </div>
             </div>

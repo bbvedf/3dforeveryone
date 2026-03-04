@@ -31,11 +31,9 @@ export const AuthProvider = ({ children }) => {
             const { access_token } = response.data;
             localStorage.setItem('token', access_token);
 
-            // Obtenemos los datos del usuario (puedes añadir un endpoint /me en el backend para esto en el futuro)
-            // Por ahora, como sabemos el email, pediremos el cliente por email o usaremos la respuesta decodificada del token
-            // Para este MVP, simularemos la carga del perfil
-            const profileResponse = await api.get('/clientes/');
-            const currentUser = profileResponse.data.find(c => c.email === email);
+            // Obtenemos los datos del usuario de forma segura
+            const profileResponse = await api.get('/clientes/me');
+            const currentUser = profileResponse.data;
 
             if (currentUser) {
                 localStorage.setItem('user', JSON.stringify(currentUser));

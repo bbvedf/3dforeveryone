@@ -106,6 +106,7 @@ class ClienteUpdate(BaseModel):
     ciudad: Optional[str] = None
     codigo_postal: Optional[str] = None
     pais: Optional[str] = None
+    contraseña: Optional[str] = None
 
 
 class Cliente(ClienteBase):

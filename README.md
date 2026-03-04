@@ -8,6 +8,7 @@ Aplicación profesional y moderna para gestionar una tienda online de productos 
 - **🎨 Frontend Premium**: Interfaz moderna con estética *Dark Mode* y *Glassmorphism* construida con React 19 y Vite.
 - **🔌 API Robusta**: Backend con FastAPI, validación de datos Pydantic v2 y ORM SQLAlchemy 2.0.
 - **🗂️ Gestión de Catálogo Pro**: CRUD avanzado de productos y categorías con búsqueda en tiempo real, filtros tipo Excel, paginación y ordenación dinámica.
+- **👤 Perfiles y Seguridad**: Gestión completa de identidad de usuario, registro con validación técnica y cambio seguro de contraseña (hashing en servidor).
 - **🛡️ Integridad de Datos**: Sistema de borrado inteligente (soft/hard delete) con validación de dependencias entre productos y categorías.
 
 ---
@@ -17,7 +18,7 @@ Aplicación profesional y moderna para gestionar una tienda online de productos 
 ```text
 3dforeveryone/
 ├── app/                # Backend API (FastAPI)
-│   ├── routes/         # Endpoints (Categorías, Productos, Usuarios, Auth)
+│   ├── routes/         # Endpoints (Categorías, Productos, Clientes, Auth)
 │   ├── models.py       # Modelos de Base de Datos (SQLAlchemy 2.0)
 │   ├── schemas.py      # Validaciones y esquemas (Pydantic v2)
 │   ├── security.py     # Lógica de JWT, Hashing y Roles
@@ -26,7 +27,7 @@ Aplicación profesional y moderna para gestionar una tienda online de productos 
 │   ├── src/
 │   │   ├── api/        # Cliente Axios centralizado con Interceptores
 │   │   ├── components/ # Modales Premium, Navbar, ProtectedRoutes
-│   │   └── pages/      # Catálogo, Admin (Productos/Categorías), Auth
+│   │   └── pages/      # Catálogo, Admin, Auth, Perfil
 │   └── Dockerfile      # Docker para React (Node 22)
 ├── database/           # Scripts de inicialización
 ├── .env                # Variables de entorno (NO subido a Git)
@@ -80,7 +81,7 @@ docker-compose exec api python -m database.init_db
 
 - [x] **Módulo de Administración**: Gestión avanzada de inventario y categorías (Completado ✅)
 - [x] **Filtros y Búsqueda**: Motor de búsqueda dinámico y filtros Excel-style (Completado ✅)
-- [ ] **Registro y Perfil**: Flujo completo de registro de nuevos usuarios y edición de perfil.
+- [x] **Registro y Perfil**: Flujo completo de registro y gestión de identidad (Completado ✅)
 - [ ] **Gestión de Imágenes**: Sistema de carga y visualización de archivos para modelos 3D.
 - [ ] **Carrito de Compra**: Gestión de items y persistencia.
 - [ ] **Pasarela de Pagos**: Integración real con Stripe.
