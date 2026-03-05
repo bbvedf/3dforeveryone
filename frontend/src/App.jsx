@@ -11,6 +11,7 @@ import Profile from './pages/Profile';
 import Checkout from './pages/Checkout';
 import Orders from './pages/Orders';
 import Categories from './pages/Categories';
+import ProductDetail from './pages/ProductDetail';
 import AdminProducts from './pages/admin/AdminProducts';
 import AdminCategories from './pages/admin/AdminCategories';
 import AdminOrders from './pages/admin/AdminOrders';
@@ -37,6 +38,7 @@ const App = () => {
               <main style={{ flex: 1 }}>
                 <Routes>
                   <Route path="/" element={<Catalog />} />
+                  <Route path="/producto/:id" element={<ProductDetail />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/registro" element={<Register />} />
                   <Route path="/categorias" element={<Categories />} />

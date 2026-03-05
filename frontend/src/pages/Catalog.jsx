@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import api from '../api/api';
 
@@ -8,6 +8,7 @@ const Catalog = () => {
     const [loading, setLoading] = useState(true);
     const [categories, setCategories] = useState([]);
     const { addToCart } = useCart();
+    const navigate = useNavigate();
     const [addedId, setAddedId] = useState(null);
 
     const handleAddToCart = (product) => {
@@ -124,6 +125,7 @@ const Catalog = () => {
                             transition: 'all 0.3s ease',
                             cursor: 'pointer'
                         }}
+                            onClick={() => navigate(`/producto/${product.id}`)}
                             onMouseEnter={(e) => {
                                 e.currentTarget.style.transform = 'translateY(-5px)';
                                 e.currentTarget.style.borderColor = 'var(--primary)';

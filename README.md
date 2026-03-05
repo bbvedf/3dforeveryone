@@ -15,7 +15,8 @@ Aplicación profesional y moderna para gestionar una tienda online de productos 
 - **Perfil editable**: Actualización de datos personales y cambio seguro de contraseña (hashing servidor).
 
 ### 🗂️ Catálogo y Navegación
-- **Motor de búsqueda**: Filtrado en tiempo real por nombre y categoría.
+- **Motor de búsqueda**: Filtrado en tiempo real por nombre y categoría en el catálogo principal.
+- **Vista de Detalle de Producto (`/producto/:id`)**: Página dedicada con foto a gran tamaño, precio, stock en tiempo real, metadatos (material, ID) y un selector avanzado para añadir múltiples cantidades al carrito con un solo click.
 - **Categorías navegables**: Vista pública de categorías activas.
 - **Navbar adaptativa**: Links dinámicos según rol (cliente/admin), icono de carrito con contador de ítems, menú lateral hamburguesa.
 - **Modo Claro/Oscuro**: Toggle persistente con transición suave y favicon dinámico.
@@ -56,6 +57,7 @@ Aplicación profesional y moderna para gestionar una tienda online de productos 
 │   │   ├── components/     # Navbar, CartDrawer, ConfirmModal (Portal), ProtectedRoute
 │   │   └── pages/
 │   │       ├── Catalog.jsx
+│   │       ├── ProductDetail.jsx
 │   │       ├── Checkout.jsx
 │   │       ├── Orders.jsx
 │   │       ├── Profile.jsx
@@ -127,6 +129,7 @@ docker-compose exec api python -m database.init_db
 - [x] **Panel Admin — Clientes**: Directorio completo con soft/hard delete (✅)
 - [x] **Panel Admin — Interfaz Unificada**: Búsqueda global (unaccent), ordenación reactiva y paginación en todas las tablas (✅)
 - [x] **Imágenes y Multimedia**: Subida nativa de imágenes físicas (Pillow) con proxy local (✅)
+- [x] **Vistas de Producto**: Página de detalles individual con gestión de múltiples unidades y stock en tiempo real (✅)
 - [ ] **Pasarela de Pagos**: Integración con Stripe
 - [ ] **Notificaciones**: Emails transaccionales (confirmación de pedido, envío)
 - [ ] **Seguimiento**: Tracking público de pedido por número
