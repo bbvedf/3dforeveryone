@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 
 const CartContext = createContext();
 
@@ -23,7 +23,7 @@ export const CartProvider = ({ children }) => {
         localStorage.setItem('cart', JSON.stringify(cartItems));
     }, [cartItems]);
 
-    const addToCart = (product, quantity = 1) => {
+    const addToCart = useCallback((product, quantity = 1) => {
         setCartItems(prevItems => {
             const existingItem = prevItems.find(item => item.id === product.id);
             if (existingItem) {
@@ -36,26 +36,26 @@ export const CartProvider = ({ children }) => {
             return [...prevItems, { ...product, quantity }];
         });
         setIsCartOpen(true);
-    };
+    }, []);
 
-    const removeFromCart = (productId) => {
+    const removeFromCart = useCallback((productId) => {
         setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
-    };
+    }, []);
 
-    const updateQuantity = (productId, newQuantity) => {
+    const updateQuantity = useCallback((productId, newQuantity) => {
         if (newQuantity < 1) return;
         setCartItems(prevItems =>
             prevItems.map(item =>
                 item.id === productId ? { ...item, quantity: newQuantity } : item
             )
         );
-    };
+    }, []);
 
-    const clearCart = () => {
+    const clearCart = useCallback(() => {
         setCartItems([]);
-    };
+    }, []);
 
-    const toggleCart = () => setIsCartOpen(!isCartOpen);
+    const toggleCart = useCallback(() => setIsCartOpen(!isCartOpen), [isCartOpen]);
 
     const totalItems = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 

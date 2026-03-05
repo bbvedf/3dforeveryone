@@ -50,11 +50,26 @@ const Checkout = () => {
             };
 
             const response = await api.post('/pedidos/', pedidoData);
-            setOrderInfo(response.data);
-            setShowSuccess(true);
-            clearCart();
+            console.log('pedido creado', response.data);
+            
+            // Crear sesión de Stripe Checkout
+            const stripeResponse = await api.post('/stripe/create-checkout-session', { 
+                pedido_id: response.data.id 
+            });
+            console.log('stripe session', stripeResponse.data);
+            
+            if (!stripeResponse.data?.url) {
+                throw new Error('No se recibió URL de Stripe');
+            }
+            // Redirigir a Stripe usando navigate para navegación más suave
+            // Stripe nos devolverá automáticamente a mis-pedidos?success=true
+            if (stripeResponse.data.url) {
+                window.location.href = stripeResponse.data.url;
+            }
         } catch (err) {
-            setError(err.response?.data?.detail || 'Error al procesar el pedido. Inténtalo de nuevo.');
+            console.error('checkout error', err);
+            const msg = err.response?.data?.detail || err.message || 'Error al procesar el pedido. Inténtalo de nuevo.';
+            setError(msg);
         } finally {
             setLoading(false);
         }
@@ -126,7 +141,7 @@ const Checkout = () => {
                             boxShadow: '0 10px 30px var(--primary-glow)',
                             textTransform: 'uppercase'
                         }}>
-                            {loading ? 'Procesando Pedido...' : 'Confirmar y Pagar'}
+                            {loading ? 'Procesando...' : 'Pagar con Stripe'}
                         </button>
                     </form>
                 </div>

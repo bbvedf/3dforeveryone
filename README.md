@@ -27,6 +27,11 @@ Aplicación profesional y moderna para gestionar una tienda online de productos 
 - **👥 Directorio de Clientes**: Dos etapas de baja — **Desactivar** (soft delete, conserva pedidos) → el cliente aparece como *Inactivo* → **Eliminar definitivamente** (hard delete de BD).
 - **🖼️ Gestión de Medios**: Subida y visualización de fotos de productos y avatares dinámicos (servidos vía Vite Proxy con prevención de caché en el navegador usando sufijos UUID).
 
+### 💳 Pagos con Stripe
+- **✅ Sesiones de Checkout**: Integración con Stripe Checkout para pagos seguros con tarjeta.
+- **✅ Webhooks de Confirmación**: Actualización automática del estado de pedidos (PENDIENTE → CONFIRMADO) mediante webhooks de Stripe en tiempo real.
+- **✅ Desarrollo Seguro**: Stripe CLI configurado para túneling local y validación de firmas de webhook.
+
 ### 🏗️ Infraestructura y Calidad
 - **🔌 API Robusta**: FastAPI con validación Pydantic v2, ORM SQLAlchemy 2.0, respuestas enriquecidas (items de pedido incluyen datos del producto y cliente).
 - **🎨 Frontend Premium**: React 19 + Vite, glassmorphism, micro-animaciones, dark mode. Modales con React Portals para centrado perfecto.
@@ -92,6 +97,26 @@ docker-compose up -d --build
 docker-compose exec api python -m database.init_db
 ```
 
+### 4. Configurar Stripe para desarrollo (Webhooks automáticos)
+Si quieres probar pagos con actualizaciones automáticas de estado:
+
+```bash
+# Instalar Stripe CLI (si no lo tienes)
+# https://stripe.com/docs/stripe-cli
+
+# Autenticarse con tu cuenta Stripe
+stripe login
+
+# En una terminal nueva, iniciar el túnel de webhooks
+stripe listen --forward-to http://localhost:8000/stripe/webhook
+
+# El CLI mostrará el webhook signing secret (whsec_xxx)
+# Cópialo y actualiza en tu .env:
+# STRIPE_WEBHOOK_SECRET=whsec_xxx
+```
+
+Esto permite que los webhooks de Stripe lleguen a tu servidor local de desarrollo y actualicen automáticamente los pedidos cuando el pago se completa.
+
 ---
 
 ## 🔑 Credenciales de Prueba
@@ -130,7 +155,7 @@ docker-compose exec api python -m database.init_db
 - [x] **Panel Admin — Interfaz Unificada**: Búsqueda global (unaccent), ordenación reactiva y paginación en todas las tablas (✅)
 - [x] **Imágenes y Multimedia**: Subida nativa de imágenes físicas (Pillow) con proxy local (✅)
 - [x] **Vistas de Producto**: Página de detalles individual con gestión de múltiples unidades y stock en tiempo real (✅)
-- [ ] **Pasarela de Pagos**: Integración con Stripe
+- [x] **Pasarela de Pagos**: ✅ Stripe Checkout + Webhooks automáticos para confirmar pedidos
 - [ ] **Notificaciones**: Emails transaccionales (confirmación de pedido, envío)
 - [ ] **Seguimiento**: Tracking público de pedido por número
 

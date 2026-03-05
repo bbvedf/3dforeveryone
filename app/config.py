@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"
     port: int = 8000
     debug: bool = True
-
+    
+    # --- Stripe ---
+    stripe_secret_key: str = ""
+    stripe_webhook_secret: str = ""
 
 settings = Settings()

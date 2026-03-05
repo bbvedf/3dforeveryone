@@ -1,26 +1,45 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import api from '../api/api';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 
 const Orders = () => {
-    const { isAdmin } = useAuth();
+    const { isAdmin, user } = useAuth();
+    console.log('Current user:', user);
+    const { clearCart } = useCart();
+    const [searchParams] = useSearchParams();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const fetchData = async () => {
+    const success = searchParams.get('success');
+    console.log('Orders component rendered, success param:', success);
+
+    const fetchData = useCallback(async () => {
+        console.log('fetchData called');
         try {
             const response = await api.get('/pedidos/');
+            console.log('Orders fetched:', response.data);
+            console.log('Order 12 status:', response.data.find(order => order.id === 12)?.estado);
             setOrders(response.data);
         } catch (err) {
             console.error('Error fetching orders:', err);
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
+        console.log('Orders component mounted or success changed, fetching data');
         fetchData();
-    }, []);
+    }, [fetchData]);
+
+    useEffect(() => {
+        if (success === 'true') {
+            console.log('Success detected, clearing cart');
+            clearCart();
+        }
+    }, [success, clearCart]);
 
     const getStatusColor = (status) => {
         if (status === 'pendiente') return '#ff9900';
@@ -67,6 +86,18 @@ const Orders = () => {
                         : 'Historial y seguimiento de tus piezas de impresión 3D.'}
                 </p>
             </header>
+
+            {success === 'true' && (
+                <div className="glass-panel" style={{
+                    padding: '20px',
+                    marginBottom: '30px',
+                    background: 'rgba(0,255,100,0.1)',
+                    border: '1px solid rgba(0,255,100,0.3)',
+                    textAlign: 'center'
+                }}>
+                    ✅ ¡Pago realizado con éxito! Tu pedido ha sido confirmado y está siendo procesado.
+                </div>
+            )}
 
             {orders.length === 0 ? (
                 <div className="glass-panel" style={{ padding: '60px', textAlign: 'center', border: '1px solid var(--card-border)' }}>

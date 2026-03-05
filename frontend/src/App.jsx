@@ -21,7 +21,7 @@ import CartDrawer from './components/CartDrawer';
 
 const App = () => {
   return (
-    <Router>
+    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <ThemeProvider>
         <CartProvider>
           <AuthProvider>
