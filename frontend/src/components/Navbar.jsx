@@ -29,6 +29,10 @@ const AdminIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>
 );
 
+const InventoryIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-container-icon lucide-container"><path d="M22 7.7c0-.6-.4-1.2-.8-1.5l-6.3-3.9a1.72 1.72 0 0 0-1.7 0l-10.3 6c-.5.2-.9.8-.9 1.4v6.6c0 .5.4 1.2.8 1.5l6.3 3.9a1.72 1.72 0 0 0 1.7 0l10.3-6c.5-.3.9-1 .9-1.5Z"/><path d="M10 21.9V14L2.1 9.1"/><path d="m10 14 11.9-6.9"/><path d="M14 19.8v-8.1"/><path d="M18 17.5V9.4"/></svg>
+);
+
 const ProfileIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
 );
@@ -40,6 +44,49 @@ const OrdersIcon = () => (
 const CartIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" /><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" /></svg>
 );
+
+// --- ESTILOS COMPARTIDOS ---
+const linkStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    fontSize: '18px',
+    fontWeight: '600',
+    padding: '12px 15px',
+    borderRadius: '12px',
+    color: 'var(--text-main)',
+    transition: 'all 0.2s ease',
+    textDecoration: 'none'
+};
+
+const linkHoverEnter = (e) => {
+    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+    e.currentTarget.style.transform = 'translateX(5px)';
+    e.currentTarget.style.color = 'var(--primary)';
+};
+
+const linkHoverLeave = (e) => {
+    e.currentTarget.style.background = 'transparent';
+    e.currentTarget.style.transform = 'translateX(0)';
+    e.currentTarget.style.color = 'var(--text-main)';
+};
+
+const adminLinkHoverEnter = (e) => {
+    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+    e.currentTarget.style.transform = 'translateX(5px)';
+    e.currentTarget.style.color = 'var(--accent)';
+};
+
+const adminLinkHoverLeave = (e) => {
+    e.currentTarget.style.background = 'transparent';
+    e.currentTarget.style.transform = 'translateX(0)';
+    e.currentTarget.style.color = 'var(--accent)';
+};
+
+const adminLinkStyle = {
+    ...linkStyle,
+    color: 'var(--accent)'
+};
 
 const Navbar = () => {
     const { user, logout, isAdmin } = useAuth();
@@ -132,57 +179,78 @@ const Navbar = () => {
                 position: 'fixed', top: 0, right: isMenuOpen ? 0 : '-100%',
                 width: '320px', height: '100vh',
                 background: 'var(--background)', // Sincronizado con el tema
-                borderLeft: '1px solid var(--card-border)', padding: '60px 30px',
+                borderLeft: '1px solid var(--card-border)', padding: '40px 30px',
                 zIndex: 2000,
                 transition: 'right 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
-                display: 'flex', flexDirection: 'column', gap: '20px',
+                display: 'flex', flexDirection: 'column', gap: '0px',
                 boxShadow: isMenuOpen ? `-30px 0 60px ${isDark ? 'rgba(0,0,0,0.7)' : 'rgba(0,0,0,0.1)'}` : 'none',
                 color: 'var(--text-main)'
             }}>
-                <button onClick={toggleMenu} style={{ alignSelf: 'flex-end', background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '28px', cursor: 'pointer' }}>&times;</button>
+                <button onClick={toggleMenu} style={{ alignSelf: 'flex-end', background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '28px', cursor: 'pointer', marginBottom: '20px' }}>&times;</button>
 
-                <h3 style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '10px' }}>Navegación</h3>
+                <h3 style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '15px' }}>Navegación</h3>
 
-                <Link to="/" onClick={toggleMenu} className="drawer-item">
+                <Link to="/" onClick={toggleMenu} style={linkStyle}
+                    onMouseEnter={linkHoverEnter}
+                    onMouseLeave={linkHoverLeave}>
                     <HomeIcon /> Catálogo
                 </Link>
 
                 {user && (
-                    <Link to="/mis-pedidos" onClick={toggleMenu} className="drawer-item">
+                    <Link to="/mis-pedidos" onClick={toggleMenu} style={linkStyle}
+                        onMouseEnter={linkHoverEnter}
+                        onMouseLeave={linkHoverLeave}>
                         <OrdersIcon /> Mis Pedidos
                     </Link>
                 )}
 
                 {isAdmin && (
                     <>
-                        <h3 style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '2px', marginTop: '20px', marginBottom: '10px' }}>Administración</h3>
-                        <Link to="/admin" onClick={toggleMenu} className="drawer-item" style={{ color: 'var(--accent) !important' }}>
-                            <AdminIcon /> Inventario
+                        <h3 style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '15px', marginTop: '20px' }}>Administración</h3>
+                        <Link to="/admin" onClick={toggleMenu} style={adminLinkStyle}
+                            onMouseEnter={adminLinkHoverEnter}
+                            onMouseLeave={adminLinkHoverLeave}>
+                            <AdminIcon /> Dashboard
                         </Link>
-                        <Link to="/admin/categorias" onClick={toggleMenu} className="drawer-item" style={{ color: 'var(--accent) !important' }}>
+                        <Link to="/admin/inventario" onClick={toggleMenu} style={adminLinkStyle}
+                            onMouseEnter={adminLinkHoverEnter}
+                            onMouseLeave={adminLinkHoverLeave}>
+                            <InventoryIcon /> Inventario
+                        </Link>
+                        <Link to="/admin/categorias" onClick={toggleMenu} style={adminLinkStyle}
+                            onMouseEnter={adminLinkHoverEnter}
+                            onMouseLeave={adminLinkHoverLeave}>
                             <CategoryIcon /> Categorías
                         </Link>
-                        <Link to="/admin/pedidos" onClick={toggleMenu} className="drawer-item" style={{ color: 'var(--accent) !important' }}>
+                        <Link to="/admin/pedidos" onClick={toggleMenu} style={adminLinkStyle}
+                            onMouseEnter={adminLinkHoverEnter}
+                            onMouseLeave={adminLinkHoverLeave}>
                             <OrdersIcon /> Pedidos
                         </Link>
-                        <Link to="/admin/clientes" onClick={toggleMenu} className="drawer-item" style={{ color: 'var(--accent) !important' }}>
+                        <Link to="/admin/clientes" onClick={toggleMenu} style={adminLinkStyle}
+                            onMouseEnter={adminLinkHoverEnter}
+                            onMouseLeave={adminLinkHoverLeave}>
                             <ProfileIcon /> Clientes
                         </Link>
                     </>
                 )}
 
-                <div style={{ marginTop: 'auto', paddingBottom: '30px' }}>
-                    <hr style={{ border: 'none', borderTop: '1px solid var(--card-border)', marginBottom: '30px' }} />
+                <div style={{ marginTop: 'auto', paddingBottom: '20px' }}>
+                    <hr style={{ border: 'none', borderTop: '1px solid var(--card-border)', marginBottom: '20px', marginTop: '20px' }} />
 
-                    <h3 style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '15px' }}>Preferencias</h3>
-                    <div onClick={toggleTheme} className="drawer-item">
+                    <h3 style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '15px', marginTop: '20px' }}>Preferencias</h3>
+                    <div onClick={toggleTheme} style={{ display: 'flex', alignItems: 'center', gap: '15px', fontSize: '18px', fontWeight: 600, padding: '12px 15px', borderRadius: '12px', color: 'var(--text-main)', transition: 'all 0.2s ease', cursor: 'pointer' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'; e.currentTarget.style.transform = 'translateX(5px)'; e.currentTarget.style.color = 'var(--primary)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.transform = 'translateX(0)'; e.currentTarget.style.color = 'var(--text-main)'; }}>
                         {isDark ? <SunIcon /> : <MoonIcon />}
                         Modo {isDark ? 'Claro' : 'Oscuro'}
                     </div>
 
                     {user ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                            <Link to="/perfil" onClick={toggleMenu} className="drawer-item" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <Link to="/perfil" onClick={toggleMenu} style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '18px', fontWeight: '600', padding: '12px 15px', borderRadius: '12px', color: 'var(--text-main)', transition: 'all 0.2s ease', textDecoration: 'none' }}
+                                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'; e.currentTarget.style.transform = 'translateX(5px)'; e.currentTarget.style.color = 'var(--primary)'; }}
+                                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.transform = 'translateX(0)'; e.currentTarget.style.color = 'var(--text-main)'; }}>
                                 <div style={{
                                     width: '32px',
                                     height: '32px',
@@ -193,7 +261,7 @@ const Navbar = () => {
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     fontSize: '14px',
-                                    fontWeight: 800,
+                                    fontWeight: '800',
                                     color: 'white'
                                 }}>
                                     {user.avatar_url ? (

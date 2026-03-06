@@ -16,6 +16,7 @@ import AdminProducts from './pages/admin/AdminProducts';
 import AdminCategories from './pages/admin/AdminCategories';
 import AdminOrders from './pages/admin/AdminOrders';
 import AdminClients from './pages/admin/AdminClients';
+import AdminDashboard from './pages/admin/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import CartDrawer from './components/CartDrawer';
 
@@ -44,6 +45,14 @@ const App = () => {
                   <Route path="/categorias" element={<Categories />} />
                   <Route
                     path="/admin"
+                    element={
+                      <ProtectedRoute adminOnly={true}>
+                        <AdminDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/inventario"
                     element={
                       <ProtectedRoute adminOnly={true}>
                         <AdminProducts />

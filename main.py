@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.database import engine, Base
 from app.models import Categoria, Producto, Cliente, Pedido, ItemPedido
-from app.routes import categorias, productos, clientes, pedidos, auth, uploads
+from app.routes import categorias, productos, clientes, pedidos, auth, uploads, dashboard
 
 # Crear tablas y directorios necesarios
 Base.metadata.create_all(bind=engine)
@@ -37,6 +37,7 @@ app.include_router(productos.router)
 app.include_router(clientes.router)
 app.include_router(pedidos.router)
 app.include_router(uploads.router)
+app.include_router(dashboard.router)
 # Stripe payments
 from app.routes import stripe_pago
 app.include_router(stripe_pago.router)
