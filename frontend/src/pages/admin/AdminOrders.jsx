@@ -16,7 +16,7 @@ const getStatusColor = (status) => {
     if (status === 'confirmado') return '#00ff64';
     if (status === 'procesando') return '#3a86ff';
     if (status === 'enviado') return '#a64dff';
-    if (status === 'entregado') return '#00ff64';
+    if (status === 'entregado') return '#FFAEC9';
     if (status === 'cancelado') return '#ff3232';
     return 'var(--text-muted)';
 };
@@ -116,7 +116,18 @@ const AdminOrders = () => {
                 <h1 style={{ fontSize: '38px', fontWeight: 900, marginBottom: '10px' }}>Gestión de Pedidos 🛠️</h1>
                 <p style={{ color: 'var(--text-muted)', fontSize: '18px' }}>Control de ventas y logística para 3D4EVERYONE.</p>
             </header>
-
+            
+            {/* LEYENDA */}
+            <div style={{ display: 'flex', gap: '15px', marginBottom: '30px', justifyContent: 'center' }}>                
+                <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Leyenda: </label>
+                <label style={{ display: 'block', fontSize: '11px', color: '#ff9900', marginBottom: '8px', textTransform: 'uppercase' }}>Pendiente</label> 
+                <label style={{ display: 'block', fontSize: '11px', color: '#00ff64', marginBottom: '8px', textTransform: 'uppercase' }}>Confirmado/Pagado</label>
+                <label style={{ display: 'block', fontSize: '11px', color: '#3a86ff', marginBottom: '8px', textTransform: 'uppercase' }}>Procesando</label>
+                <label style={{ display: 'block', fontSize: '11px', color: '#a64dff', marginBottom: '8px', textTransform: 'uppercase' }}>Enviado</label>
+                <label style={{ display: 'block', fontSize: '11px', color: '#FFAEC9', marginBottom: '8px', textTransform: 'uppercase' }}>Entregado</label>
+                <label style={{ display: 'block', fontSize: '11px', color: '#ff3232', marginBottom: '8px', textTransform: 'uppercase' }}>Cancelado</label>
+            </div>
+ 
             {/* BARRA DE FILTROS */}
             <div className="glass-panel" style={{ padding: '20px', marginBottom: '25px', display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'flex-end', border: '1px solid var(--card-border)' }}>
                 <div style={{ flex: 1, minWidth: '200px' }}>

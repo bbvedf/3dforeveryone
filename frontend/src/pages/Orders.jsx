@@ -46,7 +46,7 @@ const Orders = () => {
         if (status === 'confirmado') return '#00ff64';
         if (status === 'procesando') return '#3a86ff';
         if (status === 'enviado') return '#a64dff';
-        if (status === 'entregado') return '#00ff64';
+        if (status === 'entregado') return '#FFAEC9';
         if (status === 'cancelado') return '#ff3232';
         return 'var(--text-muted)';
     };

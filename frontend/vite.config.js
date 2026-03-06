@@ -5,15 +5,17 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
+    allowedHosts: [
+      'localhost',
+      '127.0.0.1',
+      //'.ngrok-free.app', // Permite TODOS los subdominios de ngrok
+    ],
     // HMR (Hot Module Replacement) - resiliente ante navegaciones externas
     hmr: {
       host: 'localhost',
       port: 5173,
-      // Configurar para que sea más robusto ante desconexiones
-      // (esto que pasa cuando navegas a Stripe y vuelves)
       protocol: 'ws',
     },
-    // Aumentar timeouts para que no falle tan rápido
     middlewareMode: false,
     
     proxy: {
@@ -29,7 +31,6 @@ export default defineConfig({
     }
   },
   build: {
-    // Optimizaciones para que el build sea más estable
     sourcemap: false,
     minify: 'esbuild'
   }
