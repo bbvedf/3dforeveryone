@@ -29,6 +29,7 @@ const AdminOrders = () => {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [newStatus, setNewStatus] = useState('');
+    const [trackingNumber, setTrackingNumber] = useState('');
     const [error, setError] = useState(null);
 
     // Filtros, Paginación y Ordenación
@@ -77,8 +78,18 @@ const AdminOrders = () => {
     const handleUpdateStatus = async () => {
         setError(null);
         try {
-            await api.put(`/pedidos/${selectedOrder.id}`, { estado: newStatus });
+            // Si el estado es ENVIADO, usar el endpoint de Stripe que envía el email
+            if (newStatus === 'enviado') {
+                await api.put(
+                    `/stripe/admin-change-status/${selectedOrder.id}/${newStatus.toUpperCase()}`,
+                    { tracking_number: trackingNumber || null }
+                );
+            } else {
+                // Otros estados usan el endpoint normal
+                await api.put(`/pedidos/${selectedOrder.id}`, { estado: newStatus });
+            }
             setShowUpdateModal(false);
+            setTrackingNumber('');
             fetchData();
         } catch (err) {
             setError(err.response?.data?.detail || 'Error al actualizar el estado.');
@@ -88,6 +99,7 @@ const AdminOrders = () => {
     const openUpdateModal = (order) => {
         setSelectedOrder(order);
         setNewStatus(order.estado);
+        setTrackingNumber('');
         setError(null);
         setShowUpdateModal(true);
     };
@@ -397,6 +409,30 @@ const AdminOrders = () => {
                         <div style={{ color: '#ff3232', marginTop: '10px', fontSize: '13px' }}>⚠️ {error}</div>
                     )}
                 </div>
+
+                {/* CAMPO DE TRACKING NÚMERO - SOLO SI ESTADO ES ENVIADO */}
+                {newStatus === 'enviado' && (
+                    <div style={{ marginBottom: '20px', textAlign: 'left', padding: '15px', background: 'rgba(58, 134, 255, 0.05)', borderRadius: '10px', border: '1px solid rgba(58, 134, 255, 0.2)' }}>
+                        <label style={{ display: 'block', fontSize: '11px', color: 'var(--primary)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700 }}>
+                            📦 Número de Seguimiento
+                        </label>
+                        <input
+                            type="text"
+                            placeholder="Ej: DHL123456, FEDEX789..."
+                            value={trackingNumber}
+                            onChange={(e) => setTrackingNumber(e.target.value)}
+                            style={{
+                                width: '100%', padding: '12px', borderRadius: '10px',
+                                background: 'var(--background)', color: '#ffffff',
+                                border: '1px solid var(--card-border)', outline: 'none',
+                                fontSize: '14px', fontFamily: 'var(--font-family)',
+                            }}
+                        />
+                        <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '8px' }}>
+                            ℹ️ El cliente recibirá un correo con el número de seguimiento (opcional)
+                        </p>
+                    </div>
+                )}
             </ConfirmModal>
         </div>
     );

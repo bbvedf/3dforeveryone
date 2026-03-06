@@ -60,6 +60,16 @@ services:
     networks:
       - tienda-network
 
+  # MailHog - SMTP testing
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: 3dforeveryone-mailhog
+    ports:
+      - "1025:1025"  # SMTP port
+      - "8025:8025"  # Web UI
+    networks:
+      - tienda-network
+
 networks:
   tienda-network:
     driver: bridge

@@ -7,7 +7,8 @@ from app.database import get_db
 from app.models import Pedido, ItemPedido, Producto, Cliente, EstadoPedido
 from app.schemas import PedidoResponse
 from app.config import settings
-from app.security import get_current_user
+from app.security import get_current_user, require_admin
+from app.email_service import send_order_confirmation_email, send_shipment_notification_email
 from datetime import datetime
 
 router = APIRouter(prefix="/stripe", tags=["stripe"])
@@ -135,7 +136,33 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
                 pedido.estado = EstadoPedido.CONFIRMADO
                 pedido.actualizado_en = datetime.utcnow()
                 db.commit()
+                db.refresh(pedido)
                 print(f"[stripe] Pedido {pedido_id} marcado como CONFIRMADO")
+                
+                # Enviar email de confirmación
+                try:
+                    items = [
+                        {
+                            "product_name": item.producto.nombre,
+                            "quantity": item.cantidad,
+                            "unit_price": item.precio_unitario,
+                            "total": item.precio_unitario * item.cantidad,
+                        }
+                        for item in pedido.items
+                    ]
+                    
+                    await send_order_confirmation_email(
+                        email=pedido.cliente.email,
+                        user_name=pedido.cliente.nombre,
+                        order_id=pedido.id,
+                        items=items,
+                        total_amount=pedido.total,
+                        shipping_address=pedido.direccion_envio,
+                        order_date=pedido.creado_en.strftime("%d/%m/%Y"),
+                        status=pedido.estado.value,
+                    )
+                except Exception as e:
+                    print(f"[email] Error enviando confirmación para pedido {pedido_id}: {str(e)}")
             else:
                 print(f"[stripe] WARNING: Pedido {pedido_id} no encontrado en base de datos")
     
@@ -147,6 +174,71 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
     # Siempre devolver 200 OK a Stripe (aunque no hayamos podido procesar el evento completo)
     # Si no devolvemos 200, Stripe reintentar el webhook múltiples veces
     return {"status": "received"}
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# ADMIN - Gestión de envíos
+# ──────────────────────────────────────────────────────────────────────────────
+
+class ActualizarEstadoEnvioRequest(BaseModel):
+    tracking_number: str | None = None  # Número de seguimiento (opcional)
+
+
+@router.put("/admin-change-status/{pedido_id}/{nuevo_estado}", dependencies=[Depends(require_admin)])
+async def admin_cambiar_estado_pedido(
+    pedido_id: int,
+    nuevo_estado: str,
+    req: ActualizarEstadoEnvioRequest = None,
+    db: Session = Depends(get_db),
+    current_user: Cliente = Depends(get_current_user),
+):
+    """
+    Endpoint ADMIN para cambiar el estado de una orden.
+    Cuando el estado cambia a 'ENVIADO', envía un email de notificación al cliente.
+    
+    Estados permitidos: PENDIENTE, CONFIRMADO, ENVIADO, ENTREGADO, CANCELADO
+    
+    Body (opcional):
+    {
+        "tracking_number": "DHL123456" (opcional)
+    }
+    """
+    pedido = db.query(Pedido).filter(Pedido.id == pedido_id).first()
+    if not pedido:
+        raise HTTPException(status_code=404, detail="Pedido no encontrado")
+    
+    # Validar que el nuevo estado es válido
+    try:
+        nuevo_estado_enum = EstadoPedido[nuevo_estado.upper()]
+    except KeyError:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Estado inválido. Estados permitidos: {', '.join([e.name for e in EstadoPedido])}",
+        )
+    
+    pedido.estado = nuevo_estado_enum
+    pedido.actualizado_en = datetime.utcnow()
+    db.commit()
+    db.refresh(pedido)
+    
+    # Si cambió a ENVIADO, enviar email de notificación
+    if nuevo_estado_enum == EstadoPedido.ENVIADO:
+        try:
+            tracking_number = req.tracking_number if req else None
+            await send_shipment_notification_email(
+                email=pedido.cliente.email,
+                user_name=pedido.cliente.nombre,
+                order_id=pedido.id,
+                shipping_address=pedido.direccion_envio,
+                total_amount=pedido.total,
+                shipment_date=datetime.now().strftime("%d/%m/%Y"),
+                tracking_number=tracking_number,
+            )
+            print(f"[email] Notificación de envío enviada para pedido {pedido_id}")
+        except Exception as e:
+            print(f"[email] Error enviando notificación de envío para pedido {pedido_id}: {str(e)}")
+    
+    return {"message": f"Pedido {pedido_id} actualizado a estado {nuevo_estado_enum.value}", "pedido": pedido}
 
 
 @router.post("/webhook-test/{pedido_id}")

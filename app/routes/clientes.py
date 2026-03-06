@@ -1,10 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from datetime import datetime
 
 from app.database import get_db
 from app.models import Cliente, RolUsuario
 from app.schemas import ClienteCreate, ClienteUpdate, Cliente as ClienteSchema
 from app.security import get_current_user, require_admin, hash_password
+from app.email_service import send_welcome_email
 
 router = APIRouter(prefix="/clientes", tags=["clientes"])
 
@@ -12,7 +14,7 @@ router = APIRouter(prefix="/clientes", tags=["clientes"])
 # ── Público ────────────────────────────────────────────────────────────────────
 
 @router.post("/registro", response_model=ClienteSchema, status_code=status.HTTP_201_CREATED)
-def registrar_cliente(cliente: ClienteCreate, db: Session = Depends(get_db)):
+async def registrar_cliente(cliente: ClienteCreate, db: Session = Depends(get_db)):
     """Registrar un nuevo cliente (público)"""
     if db.query(Cliente).filter(Cliente.email == cliente.email).first():
         raise HTTPException(
@@ -35,6 +37,17 @@ def registrar_cliente(cliente: ClienteCreate, db: Session = Depends(get_db)):
     db.add(db_cliente)
     db.commit()
     db.refresh(db_cliente)
+    
+    # Enviar email de bienvenida
+    try:
+        await send_welcome_email(
+            email=db_cliente.email,
+            user_name=db_cliente.nombre,
+            created_at=datetime.now().strftime("%d/%m/%Y"),
+        )
+    except Exception as e:
+        print(f"[email] Error enviando bienvenida a {db_cliente.email}: {str(e)}")
+    
     return db_cliente
 
 

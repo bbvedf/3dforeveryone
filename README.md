@@ -32,6 +32,16 @@ Aplicación profesional y moderna para gestionar una tienda online de productos 
 - **✅ Webhooks de Confirmación**: Actualización automática del estado de pedidos (PENDIENTE → CONFIRMADO) mediante webhooks de Stripe en tiempo real.
 - **✅ Desarrollo Seguro**: Stripe CLI configurado para túneling local y validación de firmas de webhook.
 
+### 📧 Sistema de Emails Transaccionales
+- **✅ FastAPI-Mail**: Servicio centralizado de envío de emails con plantillas HTML profesionales.
+- **✅ MailHog (Desarrollo)**: Servidor SMTP mock local para capturar y visualizar emails sin enviar realmente (Web UI en [http://localhost:8025](http://localhost:8025)).
+- **✅ Tres tipos de emails automáticos**:
+  - **Bienvenida**: Enviado al registrarse el usuario con información de cuenta y CTA al catálogo.
+  - **Confirmación de Pedido**: Enviado tras pago exitoso vía webhook de Stripe con resumen detallado, ítems, total y dirección de envío.
+  - **Notificación de Envío**: Disparado por admin al cambiar estado a "ENVIADO" con número de seguimiento, dirección, timeline de estados y estimación de entrega.
+- **✅ Diseño Premium**: Templates HTML con esquema de colores oscuro (#1e293b), acentos azules (#3a86ff), logo de empresa a 300px y tipografía profesional.
+- **✅ Integración Completa**: Linkado con rutas de registro, webhook de Stripe y endpoint admin de cambio de estado (`PUT /stripe/admin-change-status/{pedido_id}/{nuevo_estado}`).
+
 ### 🏗️ Infraestructura y Calidad
 - **🔌 API Robusta**: FastAPI con validación Pydantic v2, ORM SQLAlchemy 2.0, respuestas enriquecidas (items de pedido incluyen datos del producto y cliente).
 - **🎨 Frontend Premium**: React 19 + Vite, glassmorphism, micro-animaciones, dark mode. Modales con React Portals para centrado perfecto.
@@ -54,6 +64,7 @@ Aplicación profesional y moderna para gestionar una tienda online de productos 
 │   ├── models.py           # Modelos SQLAlchemy (Pedido, ItemPedido, Cliente, …)
 │   ├── schemas.py          # Schemas Pydantic v2 con relaciones anidadas
 │   ├── security.py         # JWT, hashing, guards de rol
+│   ├── email_service.py    # FastAPI-Mail: 3 templates HTML + funciones de envío
 │   └── database.py         # Conexión PostgreSQL
 ├── frontend/               # Frontend (React 19 + Vite)
 │   ├── src/
@@ -117,6 +128,14 @@ stripe listen --forward-to http://localhost:8000/stripe/webhook
 
 Esto permite que los webhooks de Stripe lleguen a tu servidor local de desarrollo y actualicen automáticamente los pedidos cuando el pago se completa.
 
+### 5. Visualizar Emails (MailHog)
+El sistema de emails ya está configurado para usar **MailHog** en desarrollo, que es un servidor SMTP mock que captura todos los emails sin enviarlos realmente.
+
+**Accede al Web UI de MailHog:**
+- 🔗 [http://localhost:8025](http://localhost:8025)
+
+Los emails de bienvenida, confirmación de pedido y notificación de envío aparecerán aquí automáticamente cuando ocurran los eventos correspondientes (signup, pago, cambio de estado a "ENVIADO").
+
 ---
 
 ## 🔑 Credenciales de Prueba
@@ -141,6 +160,7 @@ Esto permite que los webhooks de Stripe lleguen a tu servidor local de desarroll
 | **🛠️ Admin — Pedidos** | [http://localhost:5173/admin/pedidos](http://localhost:5173/admin/pedidos) |
 | **👥 Admin — Clientes** | [http://localhost:5173/admin/clientes](http://localhost:5173/admin/clientes) |
 | **📚 Swagger API Docs** | [http://localhost:8000/docs](http://localhost:8000/docs) |
+| **📧 MailHog — Emails de Prueba** | [http://localhost:8025](http://localhost:8025) |
 
 ---
 
@@ -156,8 +176,45 @@ Esto permite que los webhooks de Stripe lleguen a tu servidor local de desarroll
 - [x] **Imágenes y Multimedia**: Subida nativa de imágenes físicas (Pillow) con proxy local (✅)
 - [x] **Vistas de Producto**: Página de detalles individual con gestión de múltiples unidades y stock en tiempo real (✅)
 - [x] **Pasarela de Pagos**: ✅ Stripe Checkout + Webhooks automáticos para confirmar pedidos
-- [ ] **Notificaciones**: Emails transaccionales (confirmación de pedido, envío)
+- [x] **Notificaciones por Email**: ✅ Emails transaccionales (bienvenida, confirmación de pedido, notificación de envío) con FastAPI-Mail + MailHog
 - [ ] **Seguimiento**: Tracking público de pedido por número
+
+---
+
+---
+
+## ⚙️ Configuración de Variables de Entorno (.env)
+
+### Base de Datos
+```env
+DATABASE_URL=postgresql://user:password@db:5432/3dforeveryone
+```
+
+### JWT y Seguridad
+```env
+SECRET_KEY=tu-clave-secreta-super-segura
+ALGORITHM=HS256
+```
+
+### Stripe
+```env
+STRIPE_PUBLIC_KEY=pk_test_...
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+```
+
+### Emails (FastAPI-Mail + MailHog)
+```env
+# SMTP Configuration (Desarrollo con MailHog)
+SMTP_HOST=mailhog          # En producción: smtp.gmail.com, Sendgrid, etc.
+SMTP_PORT=1025             # En producción: 587 o 465
+SMTP_USER=test@example.com
+SMTP_PASSWORD=test
+SENDER_EMAIL=noreply@3dforeveryone.com
+SENDER_NAME=3D For Everyone
+```
+
+**Nota:** En producción, reemplaza MailHog con un servicio real como Gmail, SendGrid, AWS SES o similar. Solo cambia `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER` y `SMTP_PASSWORD`.
 
 ---
 
