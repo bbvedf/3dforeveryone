@@ -27,10 +27,11 @@ Aplicación profesional y moderna para gestionar una tienda online de productos 
 - **👥 Directorio de Clientes**: Dos etapas de baja — **Desactivar** (soft delete, conserva pedidos) → el cliente aparece como *Inactivo* → **Eliminar definitivamente** (hard delete de BD).
 - **🖼️ Gestión de Medios**: Subida y visualización de fotos de productos y avatares dinámicos (servidos vía Vite Proxy con prevención de caché en el navegador usando sufijos UUID).
 
-### 💳 Pagos con Stripe
-- **✅ Sesiones de Checkout**: Integración con Stripe Checkout para pagos seguros con tarjeta.
-- **✅ Webhooks de Confirmación**: Actualización automática del estado de pedidos (PENDIENTE → CONFIRMADO) mediante webhooks de Stripe en tiempo real.
-- **✅ Desarrollo Seguro**: Stripe CLI configurado para túneling local y validación de firmas de webhook.
+### 💳 Pasarelas de Pago
+- **✅ Stripe Checkout**: Integración con Stripe para pagos seguros con tarjeta y Apple/Google Pay.
+- **✅ PayPal Smart Buttons**: Integración nativa de PayPal con soporte para saldo, cuenta bancaria y pago financiado.
+- **✅ Webhooks de Confirmación**: Actualización automática del estado de pedidos (PENDIENTE → CONFIRMADO) mediante webhooks de Stripe y callbacks de PayPal en tiempo real.
+- **✅ Desarrollo Seguro**: Client-side SDKs con backend validation para evitar fraudes.
 
 ### 📧 Sistema de Emails Transaccionales
 - **✅ FastAPI-Mail**: Servicio centralizado de envío de emails con plantillas HTML profesionales.
@@ -175,9 +176,10 @@ Los emails de bienvenida, confirmación de pedido y notificación de envío apar
 - [x] **Panel Admin — Interfaz Unificada**: Búsqueda global (unaccent), ordenación reactiva y paginación en todas las tablas (✅)
 - [x] **Imágenes y Multimedia**: Subida nativa de imágenes físicas (Pillow) con proxy local (✅)
 - [x] **Vistas de Producto**: Página de detalles individual con gestión de múltiples unidades y stock en tiempo real (✅)
-- [x] **Pasarela de Pagos**: ✅ Stripe Checkout + Webhooks automáticos para confirmar pedidos
-- [x] **Notificaciones por Email**: ✅ Emails transaccionales (bienvenida, confirmación de pedido, notificación de envío) con FastAPI-Mail + MailHog
-- [ ] **Seguimiento**: Tracking público de pedido por número
+- [x] **Pasarela de Pagos**: ✅ Stripe Checkout + PayPal Smart Buttons con confirmación automática.
+- [x] **Notificaciones por Email**: ✅ Emails transaccionales (bienvenida, pedido, envío) con FastAPI-Mail.
+- [ ] **Pre-Producción**: 🚀 Nginx, HTTPS (SSL) y securización de cabeceras.
+- [ ] **Seguimiento**: Tracking público de pedido por número.
 
 ---
 
@@ -201,6 +203,13 @@ ALGORITHM=HS256
 STRIPE_PUBLIC_KEY=pk_test_...
 STRIPE_SECRET_KEY=sk_test_...
 STRIPE_WEBHOOK_SECRET=whsec_...
+```
+
+### PayPal
+```env
+PAYPAL_CLIENT_ID=ATo_...
+PAYPAL_CLIENT_SECRET=EK_...
+PAYPAL_MODE=sandbox        # 'sandbox' o 'live'
 ```
 
 ### Emails (FastAPI-Mail + MailHog)
