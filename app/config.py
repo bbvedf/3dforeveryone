@@ -21,5 +21,10 @@ class Settings(BaseSettings):
     # --- Stripe ---
     stripe_secret_key: str = ""
     stripe_webhook_secret: str = ""
+    
+    # --- PayPal ---
+    paypal_client_id: str = ""
+    paypal_client_secret: str = ""
+    paypal_mode: str = "sandbox" # sandbox o live
 
 settings = Settings()

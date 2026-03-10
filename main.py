@@ -38,9 +38,10 @@ app.include_router(clientes.router)
 app.include_router(pedidos.router)
 app.include_router(uploads.router)
 app.include_router(dashboard.router)
-# Stripe payments
-from app.routes import stripe_pago
+# Stripe & PayPal payments
+from app.routes import stripe_pago, paypal_pago
 app.include_router(stripe_pago.router)
+app.include_router(paypal_pago.router)
 
 # Servir archivos estáticos (imágenes subidas)
 app.mount("/uploads", StaticFiles(directory="/app/uploads"), name="uploads")

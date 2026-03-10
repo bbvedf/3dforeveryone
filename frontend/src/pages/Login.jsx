@@ -61,7 +61,7 @@ const Login = () => {
                             style={{
                                 width: '100%', padding: '15px', borderRadius: '12px',
                                 background: 'rgba(255, 255, 255, 0.05)', border: '1px solid var(--card-border)',
-                                color: 'white', outline: 'none'
+                                color: 'var(--text-main)', outline: 'none'
                             }}
                         />
                     </div>
@@ -76,7 +76,7 @@ const Login = () => {
                             style={{
                                 width: '100%', padding: '15px', borderRadius: '12px',
                                 background: 'rgba(255, 255, 255, 0.05)', border: '1px solid var(--card-border)',
-                                color: 'white', outline: 'none'
+                                color: 'var(--text-main)', outline: 'none'
                             }}
                         />
                     </div>

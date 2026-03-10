@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/api';
 import ConfirmModal from '../components/ConfirmModal';
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 const Checkout = () => {
     const { cartItems, totalPrice, clearCart } = useCart();
@@ -18,6 +19,8 @@ const Checkout = () => {
     const [error, setError] = useState(null);
     const [showSuccess, setShowSuccess] = useState(false);
     const [orderInfo, setOrderInfo] = useState(null);
+    const [paymentMethod, setPaymentMethod] = useState('stripe'); // 'stripe' or 'paypal'
+    const [paypalClientId, setPaypalClientId] = useState(null);
 
     useEffect(() => {
         if (user) {
@@ -26,6 +29,16 @@ const Checkout = () => {
                 direccion: user.direccion || ''
             }));
         }
+        // Obtener ID de Paypal
+        const fetchPaypalId = async () => {
+            try {
+                const res = await api.get('/paypal/client-id');
+                setPaypalClientId(res.data.client_id);
+            } catch (e) {
+                console.error("Error al obtener PayPal ID", e);
+            }
+        };
+        fetchPaypalId();
     }, [user]);
 
     const handleChange = (e) => {
@@ -50,30 +63,72 @@ const Checkout = () => {
             };
 
             const response = await api.post('/pedidos/', pedidoData);
-            console.log('pedido creado', response.data);
 
-            // Crear sesión de Stripe Checkout
-            const stripeResponse = await api.post('/stripe/create-checkout-session', {
-                pedido_id: response.data.id
-            });
-            console.log('stripe session', stripeResponse.data);
-
-            if (!stripeResponse.data?.url) {
-                throw new Error('No se recibió URL de Stripe');
-            }
-            // Redirigir a Stripe usando navigate para navegación más suave
-            // Stripe nos devolverá automáticamente a mis-pedidos?success=true
-            if (stripeResponse.data.url) {
-                window.location.href = stripeResponse.data.url;
+            if (paymentMethod === 'stripe') {
+                const stripeResponse = await api.post('/stripe/create-checkout-session', {
+                    pedido_id: response.data.id
+                });
+                if (stripeResponse.data?.url) {
+                    window.location.href = stripeResponse.data.url;
+                }
+            } else {
+                // El flujo de PayPal se maneja en los componentes de PayPalButtons
+                // Esta función solo se llama para Stripe ahora.
             }
         } catch (err) {
             console.error('checkout error', err);
-            const msg = err.response?.data?.detail || err.message || 'Error al procesar el pedido. Inténtalo de nuevo.';
+            const msg = err.response?.data?.detail || err.message || 'Error al procesar el pedido.';
             setError(msg);
         } finally {
             setLoading(false);
         }
     };
+
+    const handlePayPalCreateOrder = useCallback(async () => {
+        if (!formData.direccion) {
+            setError("Por favor, introduce una dirección de envío primero.");
+            return "";
+        }
+        if (!cartItems || cartItems.length === 0) return "";
+
+        setLoading(true);
+        try {
+            const pedidoData = {
+                direccion_envio: formData.direccion,
+                notas: formData.notas,
+                items: cartItems.map(item => ({
+                    producto_id: item.id,
+                    cantidad: item.quantity
+                }))
+            };
+
+            const response = await api.post('/pedidos/', pedidoData);
+            setOrderInfo(response.data);
+
+            const res = await api.post('/paypal/create-order', { pedido_id: response.data.id });
+            return res.data.id;
+        } catch (err) {
+            console.error("Error en flujo de PayPal:", err);
+            setError("Error al procesar el pago con PayPal.");
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    }, [formData, cartItems, clearCart]);
+
+    const handlePayPalApprove = useCallback(async (data) => {
+        setLoading(true);
+        try {
+            await api.post(`/paypal/capture-order/${orderInfo.id}`, { order_id: data.orderID });
+            clearCart();
+            setShowSuccess(true);
+        } catch (err) {
+            console.error("Error capturando orden:", err);
+            setError("Pago realizado en PayPal pero falló la confirmación en nuestro servidor.");
+        } finally {
+            setLoading(false);
+        }
+    }, [orderInfo, clearCart]);
 
     if (cartItems.length === 0 && !showSuccess) {
         return (
@@ -127,22 +182,74 @@ const Checkout = () => {
                             />
                         </div>
 
+                        {/* MÉTODO DE PAGO */}
+                        <div style={{ marginBottom: '35px' }}>
+                            <label style={{ display: 'block', fontSize: '12px', color: 'var(--text-muted)', marginBottom: '15px', textTransform: 'uppercase' }}>Método de Pago</label>
+                            <div style={{ display: 'flex', gap: '15px' }}>
+                                <div
+                                    onClick={() => setPaymentMethod('stripe')}
+                                    style={{
+                                        flex: 1, padding: '20px', borderRadius: '15px', border: `2px solid ${paymentMethod === 'stripe' ? 'var(--primary)' : 'var(--card-border)'}`,
+                                        background: paymentMethod === 'stripe' ? 'rgba(58, 134, 255, 0.1)' : 'rgba(255,255,255,0.02)',
+                                        cursor: 'pointer', textAlign: 'center', transition: 'all 0.3s ease'
+                                    }}
+                                >
+                                    <div style={{ fontSize: '24px', marginBottom: '8px' }}>💳</div>
+                                    <div style={{ fontWeight: 800, fontSize: '14px' }}>Tarjeta (Stripe)</div>
+                                </div>
+                                <div
+                                    onClick={() => setPaymentMethod('paypal')}
+                                    style={{
+                                        flex: 1, padding: '20px', borderRadius: '15px', border: `2px solid ${paymentMethod === 'paypal' ? '#ffc439' : 'var(--card-border)'}`,
+                                        background: paymentMethod === 'paypal' ? 'rgba(255, 196, 57, 0.1)' : 'rgba(255,255,255,0.02)',
+                                        cursor: 'pointer', textAlign: 'center', transition: 'all 0.3s ease'
+                                    }}
+                                >
+                                    <div style={{ fontSize: '24px', marginBottom: '8px' }}>🅿️</div>
+                                    <div style={{ fontWeight: 800, fontSize: '14px' }}>PayPal</div>
+                                </div>
+                            </div>
+                        </div>
+
                         {error && (
                             <div style={{ padding: '15px', background: 'rgba(255, 50, 50, 0.1)', color: '#ff3232', borderRadius: '10px', marginBottom: '20px', border: '1px solid rgba(255, 50, 50, 0.2)' }}>
                                 ⚠️ {error}
                             </div>
                         )}
 
-                        <button type="submit" disabled={loading} style={{
-                            width: '100%', padding: '20px', borderRadius: '15px',
-                            background: 'var(--gradient-main)', color: 'white',
-                            fontWeight: 900, fontSize: '18px', border: 'none',
-                            cursor: loading ? 'not-allowed' : 'pointer',
-                            boxShadow: '0 10px 30px var(--primary-glow)',
-                            textTransform: 'uppercase'
-                        }}>
-                            {loading ? 'Procesando...' : 'Pagar con Stripe'}
-                        </button>
+                        {paymentMethod === 'stripe' ? (
+                            <form onSubmit={handleSubmit}>
+                                <button type="submit" disabled={loading} style={{
+                                    width: '100%', padding: '20px', borderRadius: '15px',
+                                    background: 'var(--gradient-main)', color: 'white',
+                                    fontWeight: 900, fontSize: '18px', border: 'none',
+                                    cursor: loading ? 'not-allowed' : 'pointer',
+                                    boxShadow: '0 10px 30px var(--primary-glow)',
+                                    textTransform: 'uppercase'
+                                }}>
+                                    {loading ? 'Procesando...' : 'Pagar con Tarjeta'}
+                                </button>
+                            </form>
+                        ) : (
+                            paypalClientId ? (
+                                <PayPalScriptProvider options={{ "client-id": paypalClientId, currency: "EUR", locale: "es_ES" }}>
+                                    <PayPalButtons
+                                        key={paypalClientId}
+                                        style={{ layout: "vertical", shape: "pill", label: "pay" }}
+                                        createOrder={handlePayPalCreateOrder}
+                                        onApprove={handlePayPalApprove}
+                                        onCancel={() => { setLoading(false); setError("Pago cancelado."); }}
+                                        onError={(err) => {
+                                            console.error("PayPal Error:", err);
+                                            setLoading(false);
+                                            setError("Error con PayPal. Verifica que tu Client ID sea correcto.");
+                                        }}
+                                    />
+                                </PayPalScriptProvider>
+                            ) : (
+                                <div style={{ textAlign: 'center', color: 'var(--text-muted)' }}>Cargando pasarela...</div>
+                            )
+                        )}
                     </form>
                 </div>
 
