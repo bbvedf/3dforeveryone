@@ -116,21 +116,22 @@ const AdminOrders = () => {
                 <h1 style={{ fontSize: '38px', fontWeight: 900, marginBottom: '10px' }}>Gestión de Pedidos 🛠️</h1>
                 <p style={{ color: 'var(--text-muted)', fontSize: '18px' }}>Control de ventas y logística para 3D4EVERYONE.</p>
             </header>
-            
+
             {/* LEYENDA */}
-            <div style={{ display: 'flex', gap: '15px', marginBottom: '30px', justifyContent: 'center' }}>                
-                <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Leyenda: </label>
-                <label style={{ display: 'block', fontSize: '11px', color: '#ff9900', marginBottom: '8px', textTransform: 'uppercase' }}>Pendiente</label> 
-                <label style={{ display: 'block', fontSize: '11px', color: '#00ff64', marginBottom: '8px', textTransform: 'uppercase' }}>Confirmado/Pagado</label>
-                <label style={{ display: 'block', fontSize: '11px', color: '#3a86ff', marginBottom: '8px', textTransform: 'uppercase' }}>Procesando</label>
-                <label style={{ display: 'block', fontSize: '11px', color: '#a64dff', marginBottom: '8px', textTransform: 'uppercase' }}>Enviado</label>
-                <label style={{ display: 'block', fontSize: '11px', color: '#FFAEC9', marginBottom: '8px', textTransform: 'uppercase' }}>Entregado</label>
-                <label style={{ display: 'block', fontSize: '11px', color: '#ff3232', marginBottom: '8px', textTransform: 'uppercase' }}>Cancelado</label>
+            {/* LEYENDA */}
+            <div className="legend-container">
+                <span className="legend-item" style={{ color: 'var(--text-muted)' }}>Leyenda:</span>
+                <span className="legend-item" style={{ color: '#ff9900' }}>● Pendiente</span>
+                <span className="legend-item" style={{ color: '#00ff64' }}>● Confirmado</span>
+                <span className="legend-item" style={{ color: '#3a86ff' }}>● Procesando</span>
+                <span className="legend-item" style={{ color: '#a64dff' }}>● Enviado</span>
+                <span className="legend-item" style={{ color: '#FFAEC9' }}>● Entregado</span>
+                <span className="legend-item" style={{ color: '#ff3232' }}>● Cancelado</span>
             </div>
- 
+
             {/* BARRA DE FILTROS */}
-            <div className="glass-panel" style={{ padding: '20px', marginBottom: '25px', display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'flex-end', border: '1px solid var(--card-border)' }}>
-                <div style={{ flex: 1, minWidth: '200px' }}>
+            <div className="glass-panel admin-filters stack-mobile" style={{ marginBottom: '25px', border: '1px solid var(--card-border)' }}>
+                <div className="filter-item">
                     <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Buscar</label>
                     <input
                         type="text"
@@ -141,7 +142,7 @@ const AdminOrders = () => {
                     />
                 </div>
 
-                <div style={{ width: '220px' }}>
+                <div className="filter-item small">
                     <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Estado</label>
                     <select
                         value={filterStatus}

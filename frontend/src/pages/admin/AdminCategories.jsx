@@ -124,19 +124,19 @@ const AdminCategories = () => {
     return (
         <>
             <div className="container animate-fade-in" style={{ padding: '40px 0' }}>
-                <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
+                <header style={{ textAlign: 'center', marginBottom: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
                     <div>
-                        <h1 style={{ fontSize: '36px', fontWeight: 800 }}>Gestión de Categorías</h1>
+                        <h1 style={{ fontSize: '38px', fontWeight: 900, marginBottom: '10px' }}>Gestión de Categorías 🏷️</h1>
                         <p style={{ color: 'var(--text-muted)', fontSize: '18px' }}>Organiza tus productos por familias.</p>
                     </div>
-                    <button onClick={handleAddNew} className="btn-primary" style={{ padding: '14px 28px', borderRadius: '15px', fontWeight: 700, background: 'var(--gradient-main)', color: 'white' }}>
+                    <button onClick={handleAddNew} className="btn-primary" style={{ padding: '14px 32px', borderRadius: '15px', fontWeight: 700, background: 'var(--gradient-main)', color: 'white' }}>
                         + Nueva Categoría
                     </button>
                 </header>
 
                 {/* BARRA DE FILTROS */}
-                <div className="glass-panel" style={{ padding: '20px', marginBottom: '25px', display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'flex-end', border: '1px solid var(--card-border)' }}>
-                    <div style={{ flex: 1, minWidth: '200px' }}>
+                <div className="glass-panel admin-filters stack-mobile">
+                    <div className="filter-item">
                         <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Buscar</label>
                         <input
                             type="text"
@@ -147,7 +147,7 @@ const AdminCategories = () => {
                         />
                     </div>
 
-                    <div style={{ width: '220px' }}>
+                    <div className="filter-item small" style={{ width: '220px' }}>
                         <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Estado</label>
                         <select
                             value={filterStatus}
@@ -168,8 +168,8 @@ const AdminCategories = () => {
                     </button>
                 </div>
 
-                <div className="glass-panel" style={{ padding: '20px', border: '1px solid var(--card-border)' }}>
-                    <table>
+                <div className="glass-panel table-responsive" style={{ padding: '20px', border: '1px solid var(--card-border)' }}>
+                    <table style={{ minWidth: '800px' }}>
                         <thead>
                             <tr>
                                 <th onClick={() => handleSort('nombre')} style={{ cursor: 'pointer', userSelect: 'none' }}>

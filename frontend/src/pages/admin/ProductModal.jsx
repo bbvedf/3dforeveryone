@@ -161,21 +161,14 @@ const ProductModal = ({ product, isOpen, onClose, onSave }) => {
             alignItems: 'center', zIndex: 100000, backdropFilter: 'blur(15px)',
             padding: '20px'
         }}>
-            <div className="glass-panel animate-fade-in" style={{
-                padding: '40px', width: '100%', maxWidth: '850px',
-                maxHeight: '90vh', overflowY: 'auto',
-                border: '1px solid var(--card-border)',
-                boxShadow: '0 25px 60px rgba(0,0,0,0.5)',
-                background: 'var(--navbar-bg)',
-                position: 'relative'
-            }}>
+            <div className="glass-panel modal-panel animate-fade-in">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '35px' }}>
                     <h2 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--text-main)' }}>{product ? 'Editar Modelo 3D' : 'Añadir al Inventario'}</h2>
                     <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '32px', cursor: 'pointer' }}>&times;</button>
                 </div>
 
-                <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: '30px' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                <form onSubmit={handleSubmit} className="stack-mobile modal-grid">
+                    <div className="modal-fields">
                         <div style={{ gridColumn: 'span 2' }}>
                             <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Nombre Comercial *</label>
                             <input name="nombre" value={formData.nombre} onChange={handleChange} required autoFocus style={{ width: '100%', padding: '15px', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', color: 'var(--text-main)', border: '1px solid var(--card-border)' }} />

@@ -210,7 +210,7 @@ const AdminDashboard = () => {
           onToggle={() => toggleSection("estados")}
         >
           <div className="chart-row">
-            <ResponsiveContainer width="50%" height={250}>
+            <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
                   data={stats.pedidos_por_estado}
@@ -291,7 +291,7 @@ const AdminDashboard = () => {
           onToggle={() => toggleSection("bajoStock")}
         >
           {stats.productos_bajo_stock_detalle.length > 0 ? (
-            <div className="table-container">
+            <div className="table-container table-responsive">
               <table className="data-table">
                 <thead>
                   <tr>

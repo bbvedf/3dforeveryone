@@ -110,6 +110,12 @@ button:active {
   padding: 0 24px;
 }
 
+@media (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+  }
+}
+
 /* Scrollbar personalizada */
 ::-webkit-scrollbar {
   width: 8px;
@@ -240,4 +246,151 @@ tr:hover td {
 
 body.light-theme .drawer-item:hover {
   background: rgba(0, 0, 0, 0.05);
+}
+
+.modal-panel {
+  padding: 40px;
+  width: 100%;
+  max-width: 850px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid var(--card-border);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+  background: var(--navbar-bg);
+  position: relative;
+}
+
+.modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 30px;
+}
+
+.modal-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.legend-container {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  margin-bottom: 25px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admin-filters {
+  display: flex !important;
+  gap: 15px !important;
+  align-items: flex-end !important;
+  flex-wrap: wrap !important;
+  padding: 20px !important;
+  margin-bottom: 25px !important;
+}
+
+.filter-item {
+  flex: 1;
+  min-width: 200px;
+}
+
+.filter-item.small {
+  width: 180px;
+  flex: none;
+}
+
+.filter-item.xsmall {
+  width: 150px;
+  flex: none;
+}
+
+/* 📱 RESPONSIVE UTILITIES */
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
+
+  .stack-mobile,
+  .modal-grid,
+  .modal-fields {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 15px !important;
+  }
+
+  /* Resetear grids en móvil */
+  .stack-mobile div[style*="grid-column"],
+  .modal-grid div[style*="grid-column"],
+  .modal-fields div[style*="grid-column"] {
+    grid-column: span 1 !important;
+  }
+
+  .stack-mobile>div,
+  .stack-mobile>select,
+  .stack-mobile>input,
+  .modal-grid>div,
+  .modal-fields>div {
+    width: 100% !important;
+    max-width: 450px !important;
+    min-width: 0 !important;
+  }
+
+  /* Botones más "finos" y centrados */
+  .stack-mobile>button,
+  .admin-filters>button,
+  .btn-primary {
+    width: 90% !important;
+    max-width: 320px !important;
+    min-width: 0 !important;
+    align-self: center !important;
+    margin: 10px auto !important;
+    padding: 12px 20px !important;
+  }
+
+  /* Navbar compacto en móvil */
+  nav {
+    margin: 10px 15px !important;
+    padding: 0 15px !important;
+    height: 70px !important;
+  }
+
+  /* Ajuste para tablas en móvil */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 20px;
+    border-radius: 12px;
+  }
+
+  /* Paneles con un poco de aire lateral */
+  .glass-panel,
+  .modal-panel,
+  .admin-filters {
+    padding: 20px !important;
+    width: 95% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  h1 {
+    font-size: 26px !important;
+  }
+
+  h2 {
+    font-size: 22px !important;
+  }
 }

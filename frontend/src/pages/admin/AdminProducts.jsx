@@ -112,15 +112,16 @@ const AdminProducts = () => {
     return (
         <>
             <div className="container animate-fade-in" style={{ padding: '40px 0' }}>
-                <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', flexWrap: 'wrap', gap: '20px' }}>
+                <header style={{ textAlign: 'center', marginBottom: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
                     <div>
-                        <h1 style={{ fontSize: '36px', fontWeight: 800 }}>Gestión de Inventario</h1>
+                        <h1 style={{ fontSize: '38px', fontWeight: 900, marginBottom: '10px' }}>Gestión de Inventario 📦</h1>
                         <p style={{ color: 'var(--text-muted)', fontSize: '18px' }}>Control de modelos 3D y materiales.</p>
                     </div>
                     <button
                         onClick={handleAddNew}
+                        className="btn-primary"
                         style={{
-                            padding: '14px 28px', background: 'var(--gradient-main)', color: 'white',
+                            padding: '14px 32px', background: 'var(--gradient-main)', color: 'white',
                             fontWeight: 700, borderRadius: '15px', boxShadow: '0 8px 25px var(--primary-glow)',
                             border: 'none', cursor: 'pointer', fontSize: '16px'
                         }}
@@ -130,8 +131,8 @@ const AdminProducts = () => {
                 </header>
 
                 {/* BARRA DE FILTROS TIPO EXCEL */}
-                <div className="glass-panel" style={{ padding: '20px', marginBottom: '25px', display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'flex-end', border: '1px solid var(--card-border)' }}>
-                    <div style={{ flex: 1, minWidth: '200px' }}>
+                <div className="glass-panel admin-filters stack-mobile">
+                    <div className="filter-item">
                         <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Búsqueda</label>
                         <input
                             type="text"
@@ -142,7 +143,7 @@ const AdminProducts = () => {
                         />
                     </div>
 
-                    <div style={{ width: '180px' }}>
+                    <div className="filter-item small">
                         <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Categoría</label>
                         <select
                             value={filterCategory}
@@ -154,7 +155,7 @@ const AdminProducts = () => {
                         </select>
                     </div>
 
-                    <div style={{ width: '180px' }}>
+                    <div className="filter-item small">
                         <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Material</label>
                         <select
                             value={filterMaterial}
@@ -166,7 +167,7 @@ const AdminProducts = () => {
                         </select>
                     </div>
 
-                    <div style={{ width: '150px' }}>
+                    <div className="filter-item xsmall">
                         <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Estado</label>
                         <select
                             value={filterStatus}
@@ -190,8 +191,8 @@ const AdminProducts = () => {
                 {loading ? (
                     <div style={{ textAlign: 'center', padding: '100px', color: 'var(--text-muted)' }}>Cargando inventario...</div>
                 ) : (
-                    <div className="glass-panel" style={{ padding: '20px', overflowX: 'auto', border: '1px solid var(--card-border)' }}>
-                        <table style={{ minWidth: '800px' }}>
+                    <div className="glass-panel table-responsive" style={{ padding: '20px', border: '1px solid var(--card-border)' }}>
+                        <table style={{ minWidth: '1000px' }}>
                             <thead>
                                 <tr>
                                     <th style={{ width: '60px' }}>Foto</th>

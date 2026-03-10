@@ -76,7 +76,7 @@ const AdminClients = () => {
 
     return (
         <div className="container animate-fade-in" style={{ padding: '60px 0' }}>
-            <header style={{ marginBottom: '50px', textAlign: 'center' }}>
+            <header className="stack-mobile" style={{ marginBottom: '50px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
                 <h1 style={{ fontSize: '38px', fontWeight: 900, marginBottom: '10px' }}>Directorio de Clientes 👥</h1>
                 <p style={{ color: 'var(--text-muted)', fontSize: '18px' }}>
                     Gestión y supervisión de usuarios registrados en 3D4EVERYONE.
@@ -84,8 +84,8 @@ const AdminClients = () => {
             </header>
 
             {/* BARRA DE FILTROS */}
-            <div className="glass-panel" style={{ padding: '20px', marginBottom: '25px', display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'flex-end', border: '1px solid var(--card-border)' }}>
-                <div style={{ flex: 1, minWidth: '200px' }}>
+            <div className="glass-panel admin-filters stack-mobile">
+                <div className="filter-item">
                     <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Búsqueda</label>
                     <input
                         type="text"
@@ -96,7 +96,7 @@ const AdminClients = () => {
                     />
                 </div>
 
-                <div style={{ width: '150px' }}>
+                <div className="filter-item xsmall">
                     <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Estado</label>
                     <select
                         value={filterStatus}
@@ -117,8 +117,8 @@ const AdminClients = () => {
                 </button>
             </div>
 
-            <div className="glass-panel" style={{ padding: '30px', border: '1px solid var(--card-border)', overflowX: 'auto' }}>
-                <table style={{ borderCollapse: 'separate', borderSpacing: '0 8px', marginTop: '0' }}>
+            <div className="glass-panel table-responsive" style={{ padding: '30px', border: '1px solid var(--card-border)' }}>
+                <table style={{ borderCollapse: 'separate', borderSpacing: '0 8px', marginTop: '0', minWidth: '1000px' }}>
                     <thead>
                         <tr>
                             <th onClick={() => handleSort('id')} style={{ cursor: 'pointer', userSelect: 'none', background: 'none' }}>

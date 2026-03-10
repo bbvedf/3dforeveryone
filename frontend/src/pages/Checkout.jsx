@@ -51,13 +51,13 @@ const Checkout = () => {
 
             const response = await api.post('/pedidos/', pedidoData);
             console.log('pedido creado', response.data);
-            
+
             // Crear sesión de Stripe Checkout
-            const stripeResponse = await api.post('/stripe/create-checkout-session', { 
-                pedido_id: response.data.id 
+            const stripeResponse = await api.post('/stripe/create-checkout-session', {
+                pedido_id: response.data.id
             });
             console.log('stripe session', stripeResponse.data);
-            
+
             if (!stripeResponse.data?.url) {
                 throw new Error('No se recibió URL de Stripe');
             }
@@ -88,7 +88,7 @@ const Checkout = () => {
 
     return (
         <div className="container animate-fade-in" style={{ padding: '60px 0' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '40px' }}>
+            <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px' }}>
 
                 {/* FORMULARIO Y RESUMEN */}
                 <div className="glass-panel" style={{ padding: '40px', border: '1px solid var(--card-border)' }}>
