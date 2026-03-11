@@ -50,6 +50,14 @@ Aplicación profesional y moderna para gestionar una tienda online de productos 
 - **📐 Esquemas enlazados**: `ItemPedido` devuelve el objeto `Producto` anidado, `PedidoResponse` devuelve el `Cliente` anidado.
 
 ---
+### 🛡️ Seguridad y Producción (Shielding)
+- **✅ Proxy Inverso Nginx**: Punto único de entrada para frontend y backend con terminación SSL.
+- **✅ SSL / HTTPS**: Certificados reales de **Let's Encrypt (Certbot)** con renovación automática.
+- **✅ Fortificación API**: Rate limiting (SlowAPI), Trusted Hosts y CORS estricto.
+- **✅ Monitorización Real-time**: Dashboard de **GoAccess** en `/monitor` protegido con Auth Básica.
+- **✅ Gestión de Logs**: Rotación automática de archivos para evitar saturación de disco.
+
+---
 
 ## 🏗️ Arquitectura del Proyecto
 
@@ -85,9 +93,13 @@ Aplicación profesional y moderna para gestionar una tienda online de productos 
 │   │           ├── AdminOrders.jsx   # Acordeón + cambio estado
 │   │           └── AdminClients.jsx  # Soft/Hard delete
 │   └── Dockerfile
-├── database/               # Scripts de inicialización y seed
-├── .env                    # Variables de entorno (NO subido a Git)
-└── docker-compose.yml
+├── nginx/                  # Configuración Proxy Inverso + SSL
+│   ├── default.conf        # Reglas de ruteo, seguridad y monitorización
+│   └── .htpasswd           # Credenciales para /monitor (Ignorado en Git)
+├── certbot/                # Certificados SSL de Let's Encrypt (Ignorado en Git)
+├── logs/                   # Logs persistentes (nginx y api.log)
+├── monitor_html/           # Reports generados por GoAccess
+└── docker-compose.yml      # Orquestación de 7 servicios (db, api, ui, nginx, certbot, goaccess, mailhog)
 ```
 
 ---
@@ -153,15 +165,10 @@ Los emails de bienvenida, confirmación de pedido y notificación de envío apar
 
 ## 🔌 Accesos Directos
 
-| Servicio | URL |
-| :--- | :--- |
-| **🚀 Tienda** | [http://localhost:5173](http://localhost:5173) |
-| **🛒 Mis Pedidos** | [http://localhost:5173/mis-pedidos](http://localhost:5173/mis-pedidos) |
-| **⚙️ Admin — Inventario** | [http://localhost:5173/admin](http://localhost:5173/admin) |
-| **🛠️ Admin — Pedidos** | [http://localhost:5173/admin/pedidos](http://localhost:5173/admin/pedidos) |
-| **👥 Admin — Clientes** | [http://localhost:5173/admin/clientes](http://localhost:5173/admin/clientes) |
-| **📚 Swagger API Docs** | [http://localhost:8000/docs](http://localhost:8000/docs) |
-| **📧 MailHog — Emails de Prueba** | [http://localhost:8025](http://localhost:8025) |
+| **🚀 Tienda (HTTPS)** | [https://ryzenpc.mooo.com](https://ryzenpc.mooo.com) |
+| **📊 Monitor (GoAccess)** | [https://ryzenpc.mooo.com/monitor](https://ryzenpc.mooo.com/monitor) |
+| **📚 Swagger API Docs** | [https://ryzenpc.mooo.com/docs](https://ryzenpc.mooo.com/docs) |
+| **📧 MailHog — Emails** | [http://localhost:8025](http://localhost:8025) |
 
 ---
 
@@ -178,7 +185,9 @@ Los emails de bienvenida, confirmación de pedido y notificación de envío apar
 - [x] **Vistas de Producto**: Página de detalles individual con gestión de múltiples unidades y stock en tiempo real (✅)
 - [x] **Pasarela de Pagos**: ✅ Stripe Checkout + PayPal Smart Buttons con confirmación automática.
 - [x] **Notificaciones por Email**: ✅ Emails transaccionales (bienvenida, pedido, envío) con FastAPI-Mail.
-- [ ] **Pre-Producción**: 🚀 Nginx, HTTPS (SSL) y securización de cabeceras.
+- [x] **Monitorización y Logs**: ✅ GoAccess + Rotación nativa.
+- [x] **Seguridad y Producción**: ✅ Nginx Proxy, SSL (Certbot) y API Shielding.
+- [ ] **Calidad (CI/CD)**: 🚀 Pruebas unitarias (Pytest) y GitHub Actions.
 - [ ] **Seguimiento**: Tracking público de pedido por número.
 
 ---
@@ -186,6 +195,12 @@ Los emails de bienvenida, confirmación de pedido y notificación de envío apar
 ---
 
 ## ⚙️ Configuración de Variables de Entorno (.env)
+
+### Backend Shielding
+```env
+BACKEND_CORS_ORIGINS=["https://ryzenpc.mooo.com", "http://localhost:5173"]
+BACK_END_TRUSTED_HOSTS=["ryzenpc.mooo.com", "localhost"]
+```
 
 ### Base de Datos
 ```env
