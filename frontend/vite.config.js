@@ -8,16 +8,16 @@ export default defineConfig({
     allowedHosts: [
       'localhost',
       '127.0.0.1',
-      //'.ngrok-free.app', // Permite TODOS los subdominios de ngrok
+      'ryzenpc.mooo.com',
+      //'.ngrok-free.app', 
     ],
     // HMR (Hot Module Replacement) - resiliente ante navegaciones externas
     hmr: {
-      host: 'localhost',
-      port: 5173,
-      protocol: 'ws',
+      host: 'ryzenpc.mooo.com',
+      protocol: 'wss',
     },
     middlewareMode: false,
-    
+
     proxy: {
       '/api': {
         target: 'http://api:8000',

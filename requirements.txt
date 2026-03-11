@@ -14,3 +14,4 @@ Pillow==10.4.0
 stripe==14.4.0
 fastapi-mail==1.4.1
 httpx==0.25.1
+slowapi==0.1.9

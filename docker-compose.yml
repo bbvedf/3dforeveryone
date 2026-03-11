@@ -29,9 +29,10 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: 3dforeveryone-api
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-    ports:
-      - "8000:8000"
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload --proxy-headers --forwarded-allow-ips='*'
+    # Quitamos el mapeo de puertos públicos para forzar el uso de Nginx
+    expose:
+      - "8000"
     env_file:
       - .env
     volumes:
@@ -49,8 +50,9 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: 3dforeveryone-ui
-    ports:
-      - "5173:5173"
+    # Quitamos el mapeo de puertos públicos para forzar el uso de Nginx
+    expose:
+      - "5173"
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -60,13 +62,43 @@ services:
     networks:
       - tienda-network
 
+  # Proxy Inverso Nginx
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: 3dforeveryone-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - api
+      - frontend
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    networks:
+      - tienda-network
+
+  # Certbot - SSL Certificates
+  certbot:
+    image: certbot/certbot
+    container_name: 3dforeveryone-certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      - tienda-network
+
   # MailHog - SMTP testing
   mailhog:
     image: mailhog/mailhog:latest
     container_name: 3dforeveryone-mailhog
     ports:
-      - "1025:1025"  # SMTP port
-      - "8025:8025"  # Web UI
+      - "1025:1025" # SMTP port
+      - "8025:8025" # Web UI
     networks:
       - tienda-network
 

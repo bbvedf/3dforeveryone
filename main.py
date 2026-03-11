@@ -12,6 +12,11 @@ Base.metadata.create_all(bind=engine)
 Path("/app/uploads/productos").mkdir(parents=True, exist_ok=True)
 Path("/app/uploads/avatares").mkdir(parents=True, exist_ok=True)
 
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from app.limiter import limiter
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+
 # Crear aplicación FastAPI
 app = FastAPI(
     title=settings.api_title,
@@ -21,10 +26,20 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
-# Configurar CORS
+# Configurar limitador
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+# Middleware de seguridad: Trusted Host
+app.add_middleware(
+    TrustedHostMiddleware, 
+    allowed_hosts=settings.back_end_trusted_hosts
+)
+
+# Configurar CORS (en producción usar settings.backend_cors_origins en lugar de ["*"])
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Cambiar en producción
+    allow_origins=settings.backend_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

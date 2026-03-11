@@ -18,6 +18,11 @@ class Settings(BaseSettings):
     port: int = 8000
     debug: bool = True
     
+    # --- Seguridad y CORS ---
+    # En producción poner ["https://tu-dominio.com"] en el .env
+    backend_cors_origins: list[str] = ["*"] 
+    back_end_trusted_hosts: list[str] = ["localhost", "127.0.0.1", "nginx", "ryzenpc.mooo.com"]
+    
     # --- Stripe ---
     stripe_secret_key: str = ""
     stripe_webhook_secret: str = ""

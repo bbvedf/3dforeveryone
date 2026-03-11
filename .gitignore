@@ -22,6 +22,7 @@ dist/
 # Environment
 .env
 .env.local
+_notas.txt
 
 # Database
 *.db
@@ -37,3 +38,6 @@ Thumbs.db
 
 # Uploads
 uploads/
+
+# Certbot (SSL)
+certbot/

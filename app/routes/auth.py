@@ -10,8 +10,13 @@ from app.security import crear_token, verify_password
 router = APIRouter(prefix="/auth", tags=["autenticación"])
 
 
+from app.limiter import limiter
+from fastapi import Request
+
 @router.post("/login", response_model=Token)
+@limiter.limit("5/minute")
 def login(
+    request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db),
 ):

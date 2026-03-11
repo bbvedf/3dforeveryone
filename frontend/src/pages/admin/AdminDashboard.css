@@ -3,7 +3,7 @@
   padding: 30px 20px;
   max-width: 1600px;
   margin: 0 auto;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: var(--background);
   min-height: 100vh;
 }
 
@@ -20,7 +20,7 @@
 .dashboard-header h1 {
   font-size: 38px;
   font-weight: 900;
-  color: #fff;
+  color: var(--text-main);
   margin: 0;
 }
 
@@ -62,8 +62,8 @@
 
 /* KPI Card */
 .kpi-card {
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-  border: 1px solid #475569;
+  background: var(--navbar-bg);
+  border: 1px solid var(--card-border);
   border-radius: 12px;
   padding: 25px;
   display: flex;
@@ -100,7 +100,7 @@
 .kpi-value {
   font-size: 28px;
   font-weight: 700;
-  color: #e2e8f0;
+  color: var(--text-main);
   display: flex;
   align-items: baseline;
   gap: 5px;
@@ -183,8 +183,8 @@
 }
 
 .expandable-section {
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-  border: 1px solid #475569;
+  background: var(--navbar-bg);
+  border: 1px solid var(--card-border);
   border-radius: 12px;
   overflow: hidden;
   transition: all 0.3s ease;
@@ -197,9 +197,9 @@
 .section-header {
   width: 100%;
   padding: 20px;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: var(--background);
   border: none;
-  color: #e2e8f0;
+  color: var(--text-main);
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -210,8 +210,9 @@
 }
 
 .section-header:hover {
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-  color: #3a86ff;
+  background: var(--navbar-bg);
+  opacity: 0.9;
+  color: var(--primary);
 }
 
 .section-title {
@@ -271,8 +272,8 @@
 
 .data-table td {
   padding: 12px;
-  border-bottom: 1px solid #334155;
-  color: #cbd5e1;
+  border-bottom: 1px solid var(--card-border);
+  color: var(--text-main);
 }
 
 .data-table tbody tr:hover {

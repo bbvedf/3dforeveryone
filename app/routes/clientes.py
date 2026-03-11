@@ -13,8 +13,12 @@ router = APIRouter(prefix="/clientes", tags=["clientes"])
 
 # ── Público ────────────────────────────────────────────────────────────────────
 
+from app.limiter import limiter
+from fastapi import Request
+
 @router.post("/registro", response_model=ClienteSchema, status_code=status.HTTP_201_CREATED)
-async def registrar_cliente(cliente: ClienteCreate, db: Session = Depends(get_db)):
+@limiter.limit("2/minute")
+async def registrar_cliente(request: Request, cliente: ClienteCreate, db: Session = Depends(get_db)):
     """Registrar un nuevo cliente (público)"""
     if db.query(Cliente).filter(Cliente.email == cliente.email).first():
         raise HTTPException(
