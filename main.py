@@ -11,6 +11,24 @@ from app.routes import categorias, productos, clientes, pedidos, auth, uploads, 
 Base.metadata.create_all(bind=engine)
 Path("/app/uploads/productos").mkdir(parents=True, exist_ok=True)
 Path("/app/uploads/avatares").mkdir(parents=True, exist_ok=True)
+Path("/app/logs").mkdir(parents=True, exist_ok=True)
+
+# Configuración de Logging
+import logging
+from logging.handlers import RotatingFileHandler
+
+file_handler = RotatingFileHandler("/app/logs/api.log", maxBytes=10*1024*1024, backupCount=5)
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+file_handler.setFormatter(formatter)
+
+# Configuración del root logger
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[file_handler, logging.StreamHandler()]
+)
+
+logger = logging.getLogger("3dforeveryone")
 
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from app.limiter import limiter

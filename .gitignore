@@ -39,5 +39,9 @@ Thumbs.db
 # Uploads
 uploads/
 
+# Nginx Auth
+.htpasswd
+nginx/.htpasswd
+
 # Certbot (SSL)
 certbot/
