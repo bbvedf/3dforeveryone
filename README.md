@@ -173,10 +173,10 @@ Los emails de bienvenida, confirmación de pedido y notificación de envío apar
 
 ## 🔌 Accesos Directos
 
-| **🚀 Tienda (HTTPS)** | [https://ryzenpc.mooo.com](https://ryzenpc.mooo.com) |
-| **📊 Monitor (GoAccess)** | [https://ryzenpc.mooo.com/monitor](https://ryzenpc.mooo.com/monitor) |
-| **📚 Swagger API Docs** | [https://ryzenpc.mooo.com/docs](https://ryzenpc.mooo.com/docs) |
-| **📧 MailHog — Emails** | [http://localhost:8025](http://localhost:8025) |
+**🚀 Tienda (HTTPS)** | [https://ryzenpc.mooo.com](https://ryzenpc.mooo.com)  
+**📊 Monitor (GoAccess)** | [https://ryzenpc.mooo.com/monitor](https://ryzenpc.mooo.com/monitor)  
+**📚 Swagger API Docs** | [https://ryzenpc.mooo.com/docs](https://ryzenpc.mooo.com/docs)  
+**📧 MailHog — Emails** | [http://localhost:8025](http://localhost:8025)  
 
 ---
 
