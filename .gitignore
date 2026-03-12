@@ -23,6 +23,7 @@ dist/
 .env
 .env.local
 _notas.txt
+TODO.md
 
 # Database
 *.db
