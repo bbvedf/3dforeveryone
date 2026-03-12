@@ -9,24 +9,32 @@ from app.routes import categorias, productos, clientes, pedidos, auth, uploads, 
 
 # Crear tablas y directorios necesarios
 Base.metadata.create_all(bind=engine)
-Path("/app/uploads/productos").mkdir(parents=True, exist_ok=True)
-Path("/app/uploads/avatares").mkdir(parents=True, exist_ok=True)
-Path("/app/logs").mkdir(parents=True, exist_ok=True)
+
+# Rutas relativas si estamos fuera de Docker (tests locales, desarrollo)
+_base = Path("/app") if Path("/app").exists() else Path(".")
+Path(_base / "uploads/productos").mkdir(parents=True, exist_ok=True)
+Path(_base / "uploads/avatares").mkdir(parents=True, exist_ok=True)
+Path(_base / "logs").mkdir(parents=True, exist_ok=True)
 
 # Configuración de Logging
 import logging
 from logging.handlers import RotatingFileHandler
 
-file_handler = RotatingFileHandler("/app/logs/api.log", maxBytes=10*1024*1024, backupCount=5)
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-file_handler.setFormatter(formatter)
+handlers = [logging.StreamHandler()]
+try:
+    file_handler = RotatingFileHandler(str(_base / "logs/api.log"), maxBytes=10*1024*1024, backupCount=5)
+    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    file_handler.setFormatter(formatter)
+    handlers.append(file_handler)
+except PermissionError:
+    pass  # En entornos sin permisos (tests locales) solo usamos consola
 
-# Configuración del root logger
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[file_handler, logging.StreamHandler()]
+    handlers=handlers
 )
+
 
 logger = logging.getLogger("3dforeveryone")
 
@@ -77,7 +85,7 @@ app.include_router(stripe_pago.router)
 app.include_router(paypal_pago.router)
 
 # Servir archivos estáticos (imágenes subidas)
-app.mount("/uploads", StaticFiles(directory="/app/uploads"), name="uploads")
+app.mount("/uploads", StaticFiles(directory=str(_base / "uploads")), name="uploads")
 
 
 @app.get("/")

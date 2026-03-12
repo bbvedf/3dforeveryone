@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     # --- Seguridad y CORS ---
     # En producción poner ["https://tu-dominio.com"] en el .env
     backend_cors_origins: list[str] = ["*"] 
-    back_end_trusted_hosts: list[str] = ["localhost", "127.0.0.1", "nginx", "ryzenpc.mooo.com"]
+    back_end_trusted_hosts: list[str] = ["localhost", "127.0.0.1", "nginx", "ryzenpc.mooo.com", "testserver"]
     
     # --- Stripe ---
     stripe_secret_key: str = ""

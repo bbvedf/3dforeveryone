@@ -1,6 +1,8 @@
-# 💎 3D4EVERYONE - Full-Stack 3D Store
+# 💎 3DForEveryone - Plataforma de Impresión 3D
 
-Aplicación profesional y moderna para gestionar una tienda online de productos impresos en 3D. Este proyecto utiliza una arquitectura desacoplada con **FastAPI** en el backend y **React (Vite)** en el frontend, orquestado completamente con **Docker**.
+![Tests de CI](https://github.com/bbvedf/3dforeveryone/actions/workflows/ci.yml/badge.svg)
+
+Bienvenido al repositorio de **3DForEveryone**. Esta plataforma permite a los usuarios encargar piezas impresas en 3D, gestionar su carrito y pagar mediante Stripe o PayPal, mientras cuenta con un panel de administración completo. Este proyecto utiliza una arquitectura desacoplada con **FastAPI** en el backend y **React (Vite)** en el frontend, orquestado completamente con **Docker**.
 
 ## 🚀 Características Actuales
 
@@ -56,6 +58,12 @@ Aplicación profesional y moderna para gestionar una tienda online de productos 
 - **✅ Fortificación API**: Rate limiting (SlowAPI), Trusted Hosts y CORS estricto.
 - **✅ Monitorización Real-time**: Dashboard de **GoAccess** en `/monitor` protegido con Auth Básica.
 - **✅ Gestión de Logs**: Rotación automática de archivos para evitar saturación de disco.
+
+### 🧪 Pruebas Unitarias & Integración
+- **Tests** aislados usando `pytest` con base de datos en memoria (SQLite).
+- **Cobertura actual** en Autenticación, Categorías, Productos y Pedidos, entre otros.
+- **GitHub Actions**: Integración Continua validando la suite en cada *push* de código.
+- Leer más en el [📁 README exclusivo de Tests](tests/README.md).
 
 ---
 
