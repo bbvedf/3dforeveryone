@@ -12,9 +12,9 @@ Requiere instalar las librerías vitest, jest-dom, @testing-library/react y @tes
 
 ## 🚀 Ejecución
 
-Para ejecutar todas las pruebas de backend y obtener una salida resumida limpia:
+Para ejecutar todas las pruebas de backend y obtener una salida resumida limpia (desde raiz):
 
-```bash (desde raiz)
+```bash 
 pytest -q
 ```
 
@@ -25,9 +25,9 @@ pytest -v
 
 > **Nota**: Los _warnings_ de deprecación de librerías terceras (como Pydantic o Passlib) se han silenciado usando `pytest.ini` para tener una salida totalmente verde.
 
-Para ejecutar todas las pruebas de frontend y obtener una salida resumida limpia:
+Para ejecutar todas las pruebas de frontend y obtener una salida resumida limpia (desde frontend):
 
-```bash (desde frontend)
+```bash 
 npm test
 ```
 
