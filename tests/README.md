@@ -4,14 +4,17 @@ Este directorio contiene la suite de pruebas automatizadas para la API construid
 
 ## 🛠️ Herramientas
 - **Pytest**: Motor de ejecución de tests.
+Requiere instalar las librerías pytest, pytest-asyncio y sqlalchemy-utils. Ver requirements.txt
 - **FastAPI TestClient**: Para simular peticiones HTTP a los endpoints.
 - **SQLite (En Memoria)**: Se utiliza una base de datos temporal `sqlite:///./test.db` que se crea y destruye en cada test, aislando completamente las pruebas de la base de datos de producción (PostgreSQL).
+- **Vitest**: Motor de ejecución de tests para el frontend.
+Requiere instalar las librerías vitest, jest-dom, @testing-library/react y @testing-library/. Ver package.json.
 
 ## 🚀 Ejecución
 
-Para ejecutar todas las pruebas y obtener una salida resumida limpia:
+Para ejecutar todas las pruebas de backend y obtener una salida resumida limpia:
 
-```bash
+```bash (desde raiz)
 pytest -q
 ```
 
@@ -21,6 +24,13 @@ pytest -v
 ```
 
 > **Nota**: Los _warnings_ de deprecación de librerías terceras (como Pydantic o Passlib) se han silenciado usando `pytest.ini` para tener una salida totalmente verde.
+
+Para ejecutar todas las pruebas de frontend y obtener una salida resumida limpia:
+
+```bash (desde frontend)
+npm test
+```
+
 
 ## ✅ Cobertura Actual
 
@@ -40,6 +50,10 @@ pytest -v
 5. **Seguridad General (`test_security.py`)**:
    - Limitador de tasa (Rate Limiting) de FastAPI asegurando protección frente ataques de fuerza bruta (DDoS prevention).
    - Pruebas estrictas de políticas CORS asegurando rechazo contundente a orígenes no confiables.
+
+6. **Frontend (`*.test*.jsx`)**:
+   - Pruebas unitarias de componentes y hooks.
+   - Pruebas de integración de rutas protegidas.
 
 ## 📝 Reglas a Respetar en Nuevos Tests
 

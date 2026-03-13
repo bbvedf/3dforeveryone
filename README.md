@@ -195,7 +195,7 @@ Los emails de bienvenida, confirmación de pedido y notificación de envío apar
 - [x] **Notificaciones por Email**: ✅ Emails transaccionales (bienvenida, pedido, envío) con FastAPI-Mail.
 - [x] **Monitorización y Logs**: ✅ GoAccess + Rotación nativa.
 - [x] **Seguridad y Producción**: ✅ Nginx Proxy, SSL (Certbot) y API Shielding.
-- [ ] **Calidad (CI/CD)**: 🚀 Pruebas unitarias (Pytest) y GitHub Actions.
+- [ ] **Calidad (CI/CD)**: 🚀 Pruebas unitarias (Pytest/Vitest) y GitHub Actions.
 - [ ] **Seguimiento**: Tracking público de pedido por número.
 
 ---
