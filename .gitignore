@@ -46,3 +46,7 @@ nginx/.htpasswd
 
 # Certbot (SSL)
 certbot/
+
+# Monitor
+monitor_html/index.html
+

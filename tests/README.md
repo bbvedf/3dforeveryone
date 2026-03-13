@@ -37,6 +37,9 @@ pytest -v
    - Creación de pedidos validando el stock de productos disponible.
    - Funcionalidad de clientes listando exclusivamente sus propios pedidos.
    - Funcionalidad de administradores listando la vista global y cambiando el estado del pedido.
+5. **Seguridad General (`test_security.py`)**:
+   - Limitador de tasa (Rate Limiting) de FastAPI asegurando protección frente ataques de fuerza bruta (DDoS prevention).
+   - Pruebas estrictas de políticas CORS asegurando rechazo contundente a orígenes no confiables.
 
 ## 📝 Reglas a Respetar en Nuevos Tests
 
