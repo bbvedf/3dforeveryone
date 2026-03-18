@@ -52,8 +52,9 @@ npm test
    - Pruebas estrictas de políticas CORS asegurando rechazo contundente a orígenes no confiables.
 
 6. **Frontend (`*.test*.jsx`)**:
-   - Pruebas unitarias de componentes y hooks.
-   - Pruebas de integración de rutas protegidas.
+   - Tests de rutas protegidas (`ProtectedRoute.test.jsx`): redirección a login sin auth, acceso a rutas admin solo para admins, acceso concedido a usuarios autenticados.
+   - Tests de Login (`Login.test.jsx`): renderizado de formulario, submit con credenciales válidas/inválidas, almacenamiento de token en localStorage, manejo de errores de autenticación.
+   - Tests del Carrito de Compra (`Cart.test.jsx`): CartContext (estado vacío, add/remove/update/clear, incremento de cantidad) y CartDrawer (renderizado condicional, mensaje vacío, checkout habilitado).
 
 ## 📝 Reglas a Respetar en Nuevos Tests
 
