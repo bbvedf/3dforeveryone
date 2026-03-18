@@ -55,6 +55,7 @@ npm test
    - Tests de rutas protegidas (`ProtectedRoute.test.jsx`): redirección a login sin auth, acceso a rutas admin solo para admins, acceso concedido a usuarios autenticados.
    - Tests de Login (`Login.test.jsx`): renderizado de formulario, submit con credenciales válidas/inválidas, almacenamiento de token en localStorage, manejo de errores de autenticación.
    - Tests del Carrito de Compra (`Cart.test.jsx`): CartContext (estado vacío, add/remove/update/clear, incremento de cantidad) y CartDrawer (renderizado condicional, mensaje vacío, checkout habilitado).
+   - Tests de Registro (`Register.test.jsx`): validación de email, passwords coincidentes, longitud mínima de contraseña/nombre, campos requeridos, feedback visual de errores y registro exitoso.
 
 ## 📝 Reglas a Respetar en Nuevos Tests
 
