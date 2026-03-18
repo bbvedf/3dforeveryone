@@ -51,11 +51,23 @@ npm test
    - Limitador de tasa (Rate Limiting) de FastAPI asegurando protección frente ataques de fuerza bruta (DDoS prevention).
    - Pruebas estrictas de políticas CORS asegurando rechazo contundente a orígenes no confiables.
 
-6. **Frontend (`*.test*.jsx`)**:
+6. **Email Service (`test_email.py`)**:
+   - Envío de emails transaccionales: bienvenida, confirmación de pedido y notificación de envío.
+   - Verificación de asunto, destinatarios, contenido renderizado y tipo HTML.
+   - Tests de plantillas Jinja2 con datos dinámicos (usuarios, pedidos, tracking).
+
+7. **Frontend (`*.test*.jsx`)**:
    - Tests de rutas protegidas (`ProtectedRoute.test.jsx`): redirección a login sin auth, acceso a rutas admin solo para admins, acceso concedido a usuarios autenticados.
    - Tests de Login (`Login.test.jsx`): renderizado de formulario, submit con credenciales válidas/inválidas, almacenamiento de token en localStorage, manejo de errores de autenticación.
    - Tests del Carrito de Compra (`Cart.test.jsx`): CartContext (estado vacío, add/remove/update/clear, incremento de cantidad) y CartDrawer (renderizado condicional, mensaje vacío, checkout habilitado).
    - Tests de Registro (`Register.test.jsx`): validación de email, passwords coincidentes, longitud mínima de contraseña/nombre, campos requeridos, feedback visual de errores y registro exitoso.
+
+### Pendiente
+
+- **Checkout Flow (`Checkout.test.jsx`)**: Formulario de envío con validación e integración con Stripe/PayPal (mocking).
+- **Admin Orders (`AdminOrders.test.jsx`)**: Cambio de estado de pedidos y renderizado de acordeón expandible.
+- **Profile Updates (`Profile.test.jsx`)**: Actualización de datos personales y cambio de contraseña con validación.
+- **Pasarelas de Pago (`test_payments.py`)**: Integración con Stripe Checkout y PayPal Smart Buttons (mocking de webhooks/callbacks).
 
 ## 📝 Reglas a Respetar en Nuevos Tests
 
